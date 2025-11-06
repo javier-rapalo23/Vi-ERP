@@ -1,0 +1,122 @@
+### Vi-ERP Backend - Test de API
+### Asegúrate de que el servidor esté corriendo en http://localhost:3000
+
+@baseUrl = http://localhost:3000
+@apiUrl = {{baseUrl}}/api
+
+### ====================================
+### Health Check
+### ====================================
+
+### Verificar que el servidor está funcionando
+GET {{baseUrl}}/health
+
+### ====================================
+### Ventas - Endpoints
+### ====================================
+
+### Crear una nueva venta
+POST {{apiUrl}}/ventas
+Content-Type: application/json
+
+{
+  "clienteId": 1,
+  "productos": [
+    {
+      "id": 1,
+      "cantidad": 1,
+      "precio": 1299.99
+    },
+    {
+      "id": 2,
+      "cantidad": 2,
+      "precio": 99.99
+    }
+  ]
+}
+
+### Crear venta con múltiples productos
+POST {{apiUrl}}/ventas
+Content-Type: application/json
+
+{
+  "clienteId": 2,
+  "productos": [
+    {
+      "id": 3,
+      "cantidad": 1,
+      "precio": 89.99
+    },
+    {
+      "id": 4,
+      "cantidad": 1,
+      "precio": 449.99
+    },
+    {
+      "id": 5,
+      "cantidad": 1,
+      "precio": 79.99
+    }
+  ]
+}
+
+### Crear venta con datos inválidos (debe fallar)
+POST {{apiUrl}}/ventas
+Content-Type: application/json
+
+{
+  "clienteId": "invalid",
+  "productos": []
+}
+
+### Crear venta con cantidad negativa (debe fallar)
+POST {{apiUrl}}/ventas
+Content-Type: application/json
+
+{
+  "clienteId": 1,
+  "productos": [
+    {
+      "id": 1,
+      "cantidad": -5,
+      "precio": 100
+    }
+  ]
+}
+
+### ====================================
+### Swagger / Documentación
+### ====================================
+
+### Ver documentación de Swagger
+GET {{baseUrl}}/docs
+
+### ====================================
+### Consultas SQL directas (para testing)
+### ====================================
+
+### Para ejecutar en Prisma Studio o directamente en PostgreSQL:
+###
+### -- Ver todas las ventas
+### SELECT * FROM "Venta" ORDER BY fecha DESC;
+###
+### -- Ver detalles de una venta específica
+### SELECT 
+###   v.id as venta_id,
+###   v.fecha,
+###   c.nombre as cliente,
+###   p.nombre as producto,
+###   vd.cantidad,
+###   vd."precioUnit",
+###   (vd.cantidad * vd."precioUnit") as subtotal
+### FROM "Venta" v
+### JOIN "Cliente" c ON v."clienteId" = c.id
+### JOIN "VentaDetalle" vd ON vd."ventaId" = v.id
+### JOIN "Producto" p ON vd."productoId" = p.id
+### WHERE v.id = 1;
+###
+### -- Ver productos con bajo stock
+### SELECT nombre, codigo, stock 
+### FROM "Producto" 
+### WHERE stock < 20 
+### ORDER BY stock ASC;
