@@ -1,3 +1,6 @@
+import { IVentaRepository } from "../../../core/repositories/IVentaRepository";
+import { Venta } from "../../../core/entities/Venta";
+
 export class RegistrarVentaUseCase {
   constructor(private ventaRepo: IVentaRepository) {}
 

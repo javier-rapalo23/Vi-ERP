@@ -1,6 +1,8 @@
 import express from "express";
 import cors from "cors";
 import ventaRoutes from "./presentation/routes/ventaRoutes";
+import productoRoutes from "./presentation/routes/productoRoutes";
+import authRoutes from "./presentation/routes/authRoutes";
 import { swaggerSpec, swaggerUi } from "./presentation/routes/swagger";
 import { config } from "./config/env";
 import logger from "./config/logger";
@@ -22,7 +24,9 @@ app.get("/health", (req, res) => {
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Rutas
+app.use("/api/auth", authRoutes);
 app.use("/api/ventas", ventaRoutes);
+app.use("/api/productos", productoRoutes);
 
 // Manejo de rutas no encontradas
 app.use((req, res) => {
