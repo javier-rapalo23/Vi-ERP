@@ -4,14 +4,14 @@
   "main": "src/server.ts",
   "scripts": {
     "dev": "tsx watch src/server.ts",
-    "build": "prisma generate && tsc",
+    "build": "prisma generate --schema=src/infrastructure/database/prisma/schema.prisma && tsc",
     "start": "node dist/server.js",
-    "migrate": "prisma migrate dev",
-    "migrate:deploy": "prisma migrate deploy",
-    "studio": "prisma studio",
+    "migrate": "prisma migrate dev --schema=src/infrastructure/database/prisma/schema.prisma",
+    "migrate:deploy": "prisma migrate deploy --schema=src/infrastructure/database/prisma/schema.prisma",
+    "studio": "prisma studio --schema=src/infrastructure/database/prisma/schema.prisma",
     "seed": "tsx prisma/seed.ts",
-    "db:reset": "prisma migrate reset --force && npm run seed",
-    "postinstall": "prisma generate"
+    "db:reset": "prisma migrate reset --force --schema=src/infrastructure/database/prisma/schema.prisma && npm run seed",
+    "postinstall": "prisma generate --schema=src/infrastructure/database/prisma/schema.prisma"
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",
