@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { PurchaseRepository } from "../../infrastructure/database/repositories/PurchaseRepository";
-import { PurchaseStatus } from "../../infrastructure/database/generated/client";
+import { PurchaseStatus } from "@prisma/client";
 
 const purchaseRepo = new PurchaseRepository();
 
