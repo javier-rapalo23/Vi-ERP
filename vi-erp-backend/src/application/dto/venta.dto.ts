@@ -1,21 +1,21 @@
-export interface CrearVentaDTO {
-  clienteId: number;
-  productos: {
+export interface CreateSaleDTO {
+  customerId: number;
+  products: {
     id: number;
-    cantidad: number;
-    precio: number;
+    quantity: number;
+    price: number;
   }[];
 }
 
-export interface VentaResponseDTO {
+export interface SaleResponseDTO {
   id: number;
-  clienteId: number;
+  customerId: number;
   total: number;
-  fecha: Date;
-  detalles: {
+  date: Date;
+  details: {
     id: number;
-    productoId: number;
-    cantidad: number;
-    precioUnit: number;
+    productId: number;
+    quantity: number;
+    unitPrice: number;
   }[];
 }

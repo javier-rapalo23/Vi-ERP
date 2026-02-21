@@ -7,41 +7,214 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
-
-model Producto {
-  id        Int            @id @default(autoincrement())
-  nombre    String
-  codigo    String         @unique
-  precio    Float
-  costo     Float
-  stock     Int            @default(0)
-  createdAt DateTime       @default(now())
-  detalles  VentaDetalle[]
+// Users
+model User {
+  id        Int        @id @default(autoincrement())
+  name      String
+  email     String     @unique
+  password  String
+  role      String
+  isActive  Boolean    @default(true)
+  createdAt DateTime   @default(now())
+  createdBy Int?
+  updatedBy Int?
+  updatedAt DateTime   @updatedAt
+  sessions  session[]
+  userRoles UserRole[]
 }
 
-model Cliente {
-  id       Int      @id @default(autoincrement())
-  nombre   String
-  telefono String?
-  email    String?
-  ventas   Venta[]
+model Role {
+  id              Int              @id @default(autoincrement())
+  name            String           @unique
+  description     String?
+  isActive        Boolean          @default(true)
+  userRoles       UserRole[]
+  rolePermissions RolePermission[]
 }
 
-model Venta {
-  id        Int            @id @default(autoincrement())
-  clienteId Int
-  total     Float
-  fecha     DateTime       @default(now())
-  cliente   Cliente        @relation(fields: [clienteId], references: [id])
-  detalles  VentaDetalle[]
+model UserRole {
+  id     Int @id @default(autoincrement())
+  userId Int
+  roleId Int
+  user   User @relation(fields: [userId], references: [id])
+  role   Role @relation(fields: [roleId], references: [id])
+}
+model Permission {
+  id              Int              @id @default(autoincrement())
+  name            String           @unique
+  description     String?
+  rolePermissions RolePermission[]
+}
+model RolePermission {
+  id           Int @id @default(autoincrement())
+  roleId       Int
+  permissionId Int
+  role         Role       @relation(fields: [roleId], references: [id])
+  permission   Permission @relation(fields: [permissionId], references: [id])
 }
 
-model VentaDetalle {
+model session {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  token     String   @unique
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+// Inventory
+model Product {
+  id                    Int                    @id @default(autoincrement())
+  name                  String
+  code                  String                 @unique
+  price                 Float
+  cost                  Float
+  stock                 Int                    @default(0)
+  createdAt             DateTime               @default(now())
+  saleDetails           SaleDetail[]
+  purchaseDetails       PurchaseDetail[]
+  inventoryTransactions InventoryTransaction[]
+}
+
+// Sales
+model Customer {
+  id    Int     @id @default(autoincrement())
+  name  String
+  phone String?
+  email String?
+  adress String?
+  isActive Boolean @default(true)
+  createdAt DateTime @default(now())
+  createdBy Int?
+  updatedBy Int?
+  updatedAt DateTime @updatedAt
+  sales Sale[]
+}
+
+model Sale {
+  id                 Int                 @id @default(autoincrement())
+  customerId         Int
+  total              Float
+  status             SaleStatus          @default(PENDING)
+  date               DateTime            @default(now())
+  dueDate            DateTime?
+  customer           Customer            @relation(fields: [customerId], references: [id])
+  details            SaleDetail[]
+  accountsReceivable AccountsReceivable?
+}
+
+model SaleDetail {
+  id        Int     @id @default(autoincrement())
+  saleId    Int
+  productId Int
+  quantity  Int
+  unitPrice Float
+  sale      Sale    @relation(fields: [saleId], references: [id])
+  product   Product @relation(fields: [productId], references: [id])
+}
+
+model AccountsReceivable {
+  id          Int               @id @default(autoincrement())
+  saleId      Int               @unique
+  totalAmount Float
+  paidAmount  Float             @default(0)
+  balance     Float
+  dueDate     DateTime?
+  sale        Sale              @relation(fields: [saleId], references: [id])
+  payments    CustomerPayment[]
+}
+
+model CustomerPayment {
+  id                   Int                @id @default(autoincrement())
+  accountsReceivableId Int
+  amount               Float
+  paymentMethod        String
+  reference            String?
+  date                 DateTime           @default(now())
+  accountsReceivable   AccountsReceivable @relation(fields: [accountsReceivableId], references: [id])
+}
+
+model InventoryTransaction {
+  id        Int      @id @default(autoincrement())
+  productId Int
+  quantity  Int
+  type      String   // "IN" for purchases, "OUT" for sales
+  date      DateTime @default(now())
+  product   Product  @relation(fields: [productId], references: [id])
+}
+
+
+
+//Compras
+model Supplier {
+  id    Int     @id @default(autoincrement())
+  name  String
+  phone String?
+  email String?
+  adress String?
+  isActive Boolean @default(true)
+  createdAt DateTime @default(now())
+  createdBy Int?
+  updatedBy Int?
+  updatedAt DateTime @updatedAt
+  purchases Purchase[]
+}
+
+model Purchase {
+  id              Int              @id @default(autoincrement())
+  supplierId      Int
+  total           Float
+  status          PurchaseStatus   @default(PENDING)
+  date            DateTime         @default(now())
+  dueDate         DateTime
+  supplier        Supplier         @relation(fields: [supplierId], references: [id])
+  details         PurchaseDetail[]
+  accountsPayable AccountsPayable?
+}
+
+model PurchaseDetail {
   id         Int      @id @default(autoincrement())
-  ventaId    Int
-  productoId Int
-  cantidad   Int
-  precioUnit Float
-  venta      Venta    @relation(fields: [ventaId], references: [id])
-  producto   Producto @relation(fields: [productoId], references: [id])
+  purchaseId Int
+  productId  Int
+  quantity   Int
+  unitPrice  Float
+  purchase   Purchase @relation(fields: [purchaseId], references: [id])
+  product    Product  @relation(fields: [productId], references: [id])
 }
+
+model AccountsPayable {
+  id          Int       @id @default(autoincrement())
+  purchaseId  Int       @unique
+  totalAmount Float
+  paidAmount  Float     @default(0)
+  balance     Float
+  dueDate     DateTime
+  purchase    Purchase  @relation(fields: [purchaseId], references: [id])
+  payments    Payment[]
+}
+
+model Payment {
+  id                Int             @id @default(autoincrement())
+  accountsPayableId Int
+  amount            Float
+  paymentMethod     String
+  reference         String?
+  date              DateTime        @default(now())
+  accountsPayable   AccountsPayable @relation(fields: [accountsPayableId], references: [id])
+}
+
+enum PurchaseStatus {
+  PENDING
+  PARTIAL
+  PAID
+  CANCELLED
+}
+
+enum SaleStatus {
+  PENDING
+  PARTIAL
+  PAID
+  CANCELLED
+}
+
+//Mantenimientos

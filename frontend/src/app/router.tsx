@@ -9,6 +9,22 @@ const POS = lazy(() => import("@/modules/pos/pages/POS"));
 const ProductosList = lazy(() => import("@/modules/inventario/pages/ProductosList"));
 const ProductoForm = lazy(() => import("@/modules/inventario/pages/ProductoForm"));
 
+// Mantenimientos
+const MantenimientosIndex = lazy(() => import("@/modules/mantenimientos/pages/MantenimientosIndex"));
+const UsersList = lazy(() => import("@/modules/mantenimientos/pages/UsersList"));
+const UserForm = lazy(() => import("@/modules/mantenimientos/pages/UserForm"));
+const RolesList = lazy(() => import("@/modules/mantenimientos/pages/RolesList"));
+const RoleForm = lazy(() => import("@/modules/mantenimientos/pages/RoleForm"));
+const PermissionsList = lazy(() => import("@/modules/mantenimientos/pages/PermissionsList"));
+const PermissionForm = lazy(() => import("@/modules/mantenimientos/pages/PermissionForm"));
+
+// Compras
+const ComprasIndex = lazy(() => import("@/modules/compras/pages/ComprasIndex"));
+const SuppliersList = lazy(() => import("@/modules/compras/pages/SuppliersList"));
+const SupplierForm = lazy(() => import("@/modules/compras/pages/SupplierForm"));
+const PurchasesList = lazy(() => import("@/modules/compras/pages/PurchasesList"));
+const PurchaseForm = lazy(() => import("@/modules/compras/pages/PurchaseForm"));
+
 export const router = createBrowserRouter([
   {
     path: "/",
@@ -47,6 +63,164 @@ export const router = createBrowserRouter([
             element: (
               <Protected roles={["admin"]}>
                 <ProductoForm />
+              </Protected>
+            ),
+          },
+        ],
+      },
+      {
+        path: "mantenimientos",
+        children: [
+          {
+            index: true,
+            element: (
+              <Protected roles={["admin"]}>
+                <MantenimientosIndex />
+              </Protected>
+            ),
+          },
+          {
+            path: "usuarios",
+            children: [
+              {
+                index: true,
+                element: (
+                  <Protected roles={["admin"]}>
+                    <UsersList />
+                  </Protected>
+                ),
+              },
+              {
+                path: "nuevo",
+                element: (
+                  <Protected roles={["admin"]}>
+                    <UserForm />
+                  </Protected>
+                ),
+              },
+              {
+                path: ":id/editar",
+                element: (
+                  <Protected roles={["admin"]}>
+                    <UserForm />
+                  </Protected>
+                ),
+              },
+            ],
+          },
+          {
+            path: "roles",
+            children: [
+              {
+                index: true,
+                element: (
+                  <Protected roles={["admin"]}>
+                    <RolesList />
+                  </Protected>
+                ),
+              },
+              {
+                path: "nuevo",
+                element: (
+                  <Protected roles={["admin"]}>
+                    <RoleForm />
+                  </Protected>
+                ),
+              },
+              {
+                path: ":id/editar",
+                element: (
+                  <Protected roles={["admin"]}>
+                    <RoleForm />
+                  </Protected>
+                ),
+              },
+            ],
+          },
+          {
+            path: "permisos",
+            children: [
+              {
+                index: true,
+                element: (
+                  <Protected roles={["admin"]}>
+                    <PermissionsList />
+                  </Protected>
+                ),
+              },
+              {
+                path: "nuevo",
+                element: (
+                  <Protected roles={["admin"]}>
+                    <PermissionForm />
+                  </Protected>
+                ),
+              },
+              {
+                path: ":id/editar",
+                element: (
+                  <Protected roles={["admin"]}>
+                    <PermissionForm />
+                  </Protected>
+                ),
+              },
+            ],
+          },
+        ],
+      },
+      {
+        path: "compras",
+        children: [
+          {
+            index: true,
+            element: (
+              <Protected roles={["admin"]}>
+                <ComprasIndex />
+              </Protected>
+            ),
+          },
+          {
+            path: "proveedores",
+            children: [
+              {
+                index: true,
+                element: (
+                  <Protected roles={["admin"]}>
+                    <SuppliersList />
+                  </Protected>
+                ),
+              },
+              {
+                path: "nuevo",
+                element: (
+                  <Protected roles={["admin"]}>
+                    <SupplierForm />
+                  </Protected>
+                ),
+              },
+              {
+                path: ":id/editar",
+                element: (
+                  <Protected roles={["admin"]}>
+                    <SupplierForm />
+                  </Protected>
+                ),
+              },
+            ],
+          },
+          {
+            path: "lista",
+            element: (
+              <Protected roles={["admin"]}>
+                <PurchasesList />
+              </Protected>
+            ),
+          },
+          {
+            path: "nueva",
+            element: (
+              <Protected roles={["admin"]}>
+                <PurchaseForm />
               </Protected>
             ),
           },

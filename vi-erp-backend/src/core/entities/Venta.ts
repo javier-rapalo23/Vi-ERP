@@ -1,10 +1,10 @@
-export class Venta {
+export class Sale {
   constructor(
-    public clienteId: number,
-    public productos: { id: number; cantidad: number; precio: number }[]
+    public customerId: number,
+    public products: { id: number; quantity: number; price: number }[]
   ) {}
 
-  calcularTotal(): number {
-    return this.productos.reduce((acc, p) => acc + p.cantidad * p.precio, 0);
+  calculateTotal(): number {
+    return this.products.reduce((acc, p) => acc + p.quantity * p.price, 0);
   }
 }

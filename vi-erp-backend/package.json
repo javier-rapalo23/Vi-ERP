@@ -1,18 +1,20 @@
 {
-  "name": "vi-erp-backend",
+  "name": "vixo-backend",
   "version": "1.0.0",
   "main": "src/server.ts",
   "scripts": {
     "dev": "tsx watch src/server.ts",
-    "build": "tsc",
+    "build": "prisma generate && tsc",
     "start": "node dist/server.js",
     "migrate": "prisma migrate dev",
+    "migrate:deploy": "prisma migrate deploy",
     "studio": "prisma studio",
     "seed": "tsx prisma/seed.ts",
-    "db:reset": "prisma migrate reset --force && npm run seed"
+    "db:reset": "prisma migrate reset --force && npm run seed",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
-    "@prisma/client": "^3.15.2",
+    "@prisma/client": "^5.22.0",
     "@types/bcrypt": "^6.0.0",
     "@types/swagger-ui-express": "^4.1.8",
     "bcrypt": "^5.1.1",
@@ -20,11 +22,12 @@
     "dotenv": "^10.0.0",
     "express": "^4.21.2",
     "jsonwebtoken": "^8.5.1",
-    "prisma": "^3.0.0",
+    "openai": "^4.77.3",
+    "prisma": "^5.22.0",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^4.6.3",
     "winston": "^3.18.3",
-    "zod": "^4.1.12"
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@types/cors": "^2.8.19",
@@ -34,7 +37,7 @@
     "@types/swagger-jsdoc": "^6.0.4",
     "ts-node-dev": "^1.1.8",
     "tsx": "^4.20.6",
-    "typescript": "^4.9.5"
+    "typescript": "^5.9.3"
   },
   "license": "MIT",
   "description": "Vi-ERP es un sistema ERP modular diseñado con una arquitectura limpia utilizando Node.js, PostgreSQL y Prisma ORM. Este proyecto tiene como objetivo proporcionar una API escalable y mantenible para gestionar diferentes módulos de un ERP, como ventas, inventario, compras, contabilidad y empleados.",

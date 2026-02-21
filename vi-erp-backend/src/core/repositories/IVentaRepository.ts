@@ -1,5 +1,5 @@
-import { Venta } from "../entities/Venta";
+import { Sale } from "../entities/Venta";
 
-export interface IVentaRepository {
-  create(venta: Venta): Promise<any>;
+export interface ISaleRepository {
+  create(sale: Sale): Promise<any>;
 }

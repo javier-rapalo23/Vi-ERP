@@ -1,15 +1,57 @@
-# React + TypeScript + Vite
+# 🟢 Vixo - Sistema de Gestión Comercial
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Frontend del sistema Vixo construido con React + TypeScript + Vite.
 
-Currently, two official plugins are available:
+## 🎨 Identidad de Marca
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+**Color Principal:** Vixo Green (`#22C55E`) - Un verde vibrante que representa crecimiento y eficiencia.
 
-## React Compiler
+### 📚 Recursos de Diseño:
+- **[VIXO_COLORS.md](./VIXO_COLORS.md)** - Guía completa de paleta de colores, estados, y ejemplos de uso
+- **[VIXO_COMPONENTS_EXAMPLES.md](./VIXO_COMPONENTS_EXAMPLES.md)** - Componentes listos para copiar/pegar
 
-The React Compiler is currently not compatible with SWC. See [this issue](https://github.com/vitejs/vite-plugin-react/issues/428) for tracking the progress.
+### Paleta Rápida:
+```tsx
+// Verde Primary (escala completa 50-950)
+bg-vixo-500 → #22C55E (Primary)
+bg-vixo-600 → #16A34A (Hover)
+
+// Acentos
+bg-vixo-amber → #F59E0B (Promociones)
+bg-vixo-blue → #3B82F6 (Info)
+bg-vixo-purple → #A855F7 (Premium)
+```
+
+## 🚀 Stack Tecnológico
+
+- **React 18** con TypeScript
+- **Vite** - Build tool ultrarrápido
+- **TailwindCSS** - Styling con clases utilitarias
+- **React Query** - Gestión de estado del servidor
+- **Zustand** - Gestión de estado cliente
+- **React Router** - Enrutamiento
+
+## 📦 Instalación
+
+```bash
+npm install
+```
+
+## 🔧 Desarrollo
+
+```bash
+npm run dev
+```
+
+## 🏗️ Build de Producción
+
+```bash
+npm run build
+```
+
+---
+
+## ⚙️ Configuración Técnica
 
 ## Expanding the ESLint configuration
 

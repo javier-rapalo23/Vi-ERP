@@ -1,7 +1,7 @@
 import { Router } from "express";
-import { crearVenta } from "../controllers/VentaController";
+import { createSale } from "../controllers/VentaController";
 
 const router = Router();
-router.post("/", crearVenta);
+router.post("/", createSale);
 
 export default router;

@@ -1,8 +1,8 @@
-# 🧱 Vi-ERP Backend
+# 🟢 Vixo Backend
 
 ## 🧭 Introducción
 
-**Vi-ERP** es un sistema ERP modular diseñado con una arquitectura limpia (Clean Architecture) y un enfoque moderno basado en Node.js, Express, Prisma ORM y PostgreSQL. Este backend proporciona una API REST escalable y mantenible para gestionar diferentes módulos de un ERP.
+**Vixo** es un sistema de gestión comercial modular diseñado con una arquitectura limpia (Clean Architecture) y un enfoque moderno basado en Node.js, Express, Prisma ORM y PostgreSQL. Este backend proporciona una API REST escalable y mantenible para gestionar POS, inventario, compras, ventas y contabilidad.
 
 ## 🧩 Arquitectura
 
@@ -269,6 +269,41 @@ Esto abrirá Prisma Studio en `http://localhost:5555`
 - **Imports**: Utiliza rutas absolutas desde `src/`
 - **Tipos**: Siempre define tipos explícitos en TypeScript
 - **Errores**: Usa el logger Winston en lugar de `console.log`
+
+## 🌐 Despliegue en Railway
+
+Este proyecto está configurado para desplegarse fácilmente en Railway con PostgreSQL.
+
+### Archivos de configuración incluidos:
+- ✅ `railway.json` - Configuración de build y deploy
+- ✅ `nixpacks.toml` - Configuración de Nixpacks
+- ✅ `Procfile` - Comando de inicio
+- ✅ Scripts automáticos de migración
+
+### Guía rápida:
+
+1. **Crear base de datos PostgreSQL** en Railway
+2. **Conectar tu repositorio** de GitHub
+3. **Configurar variables de entorno**:
+   ```env
+   DATABASE_URL=${{Postgres.DATABASE_URL}}
+   JWT_SECRET=tu_clave_segura_aqui
+   FRONTEND_URL=https://tu-frontend.com
+   OPENAI_API_KEY=sk-tu-api-key (opcional)
+   NODE_ENV=production
+   ```
+4. **Establecer Root Directory**: `vi-erp-backend` (si es monorepo)
+5. **Deploy automático** se ejecutará
+
+### Documentación completa:
+📚 [RAILWAY_DEPLOY.md](./RAILWAY_DEPLOY.md) - Guía detallada paso a paso
+
+### Características del deploy:
+- ✨ Build automático con TypeScript
+- 🗄️ Migraciones de Prisma automáticas
+- 🔄 Auto-deploy en cada push al repo
+- 📊 Logs en tiempo real
+- 🌍 URL pública generada automáticamente
 
 ## 🚀 Roadmap
 

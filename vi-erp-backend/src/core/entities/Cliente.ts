@@ -1,34 +1,34 @@
-export class Cliente {
+export class Customer {
   constructor(
     public id: number,
-    public nombre: string,
-    public telefono?: string,
+    public name: string,
+    public phone?: string,
     public email?: string
   ) {
-    this.validar();
+    this.validate();
   }
 
-  private validar(): void {
-    if (!this.nombre || this.nombre.trim() === "") {
-      throw new Error("El nombre del cliente es requerido");
+  private validate(): void {
+    if (!this.name || this.name.trim() === "") {
+      throw new Error("Customer name is required");
     }
-    if (this.email && !this.esEmailValido(this.email)) {
-      throw new Error("El email no tiene un formato válido");
+    if (this.email && !this.isValidEmail(this.email)) {
+      throw new Error("Email format is invalid");
     }
   }
 
-  private esEmailValido(email: string): boolean {
+  private isValidEmail(email: string): boolean {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   }
 
-  actualizarTelefono(telefono: string): void {
-    this.telefono = telefono;
+  updatePhone(phone: string): void {
+    this.phone = phone;
   }
 
-  actualizarEmail(email: string): void {
-    if (!this.esEmailValido(email)) {
-      throw new Error("El email no tiene un formato válido");
+  updateEmail(email: string): void {
+    if (!this.isValidEmail(email)) {
+      throw new Error("Email format is invalid");
     }
     this.email = email;
   }

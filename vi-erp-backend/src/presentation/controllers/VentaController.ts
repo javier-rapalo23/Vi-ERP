@@ -1,15 +1,15 @@
 import { Request, Response } from "express";
-import { RegistrarVentaUseCase } from "../../application/useCases/ventas/RegistrarVentaUseCase";
-import { VentaRepository } from "../../infrastructure/database/repositories/VentaRepository";
-import { crearVentaSchema } from "../validators/ventaValidator";
+import { RegisterSaleUseCase } from "../../application/useCases/ventas/RegistrarVentaUseCase";
+import { SaleRepository } from "../../infrastructure/database/repositories/VentaRepository";
+import { createSaleSchema } from "../validators/ventaValidator";
 import logger from "../../config/logger";
 
 /**
  * @swagger
- * /api/ventas:
+ * /api/sales:
  *   post:
- *     summary: Registrar una nueva venta
- *     tags: [Ventas]
+ *     summary: Register a new sale
+ *     tags: [Sales]
  *     requestBody:
  *       required: true
  *       content:
@@ -17,48 +17,48 @@ import logger from "../../config/logger";
  *           schema:
  *             type: object
  *             properties:
- *               clienteId:
+ *               customerId:
  *                 type: number
- *               productos:
+ *               products:
  *                 type: array
  *                 items:
  *                   type: object
  *                   properties:
  *                     id:
  *                       type: number
- *                     cantidad:
+ *                     quantity:
  *                       type: number
- *                     precio:
+ *                     price:
  *                       type: number
  *     responses:
  *       201:
- *         description: Venta registrada exitosamente
+ *         description: Sale registered successfully
  *       400:
- *         description: Datos inválidos
+ *         description: Invalid data
  *       500:
- *         description: Error del servidor
+ *         description: Server error
  */
-export const crearVenta = async (req: Request, res: Response) => {
+export const createSale = async (req: Request, res: Response) => {
   try {
-    // Validar datos de entrada
-    const validatedData = crearVentaSchema.parse(req.body);
+    // Validate input data
+    const validatedData = createSaleSchema.parse(req.body);
     
-    const ventaRepository = new VentaRepository();
-    const useCase = new RegistrarVentaUseCase(ventaRepository);
+    const saleRepository = new SaleRepository();
+    const useCase = new RegisterSaleUseCase(saleRepository);
     const result = await useCase.execute(validatedData);
     
-    logger.info(`Venta registrada exitosamente: ${result.id}`);
-    res.status(201).json({ message: "Venta registrada", data: result });
+    logger.info(`Sale registered successfully: ${result.id}`);
+    res.status(201).json({ message: "Sale registered", data: result });
   } catch (err: any) {
     if (err.name === "ZodError") {
-      logger.warn("Error de validación en creación de venta:", err.errors);
+      logger.warn("Validation error in sale creation:", err.errors);
       return res.status(400).json({ 
-        error: "Datos inválidos", 
+        error: "Invalid data", 
         details: err.errors 
       });
     }
     
-    logger.error("Error al crear venta:", err);
-    res.status(500).json({ error: err.message || "Error interno del servidor" });
+    logger.error("Error creating sale:", err);
+    res.status(500).json({ error: err.message || "Internal server error" });
   }
 };

@@ -1,4 +1,5 @@
 import { useAuthStore } from "@/shared/store/auth.store";
+import { ShoppingCart, TrendingUp, Package, Users, AlertTriangle } from "lucide-react";
 
 export default function Dashboard() {
   const { user, role } = useAuthStore();
@@ -8,14 +9,12 @@ export default function Dashboard() {
       {/* Header / Hero */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-semibold text-gris-piedra">Hola, {user?.name || user?.email || "Usuario"}</h1>
-          <p className="mt-1 text-sm text-gris-piedra opacity-75">Panel de control — Rol: <span className="font-medium">{role}</span></p>
+          <h1 className="text-3xl font-semibold text-slate-900 dark:text-slate-50">Hola, {user?.name || user?.email || "Usuario"}</h1>
+          <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">Panel de control — Rol: <span className="font-medium text-vixo-600 dark:text-vixo-400">{role}</span></p>
         </div>
         <div className="flex items-center gap-3">
-          <button className="inline-flex items-center gap-2 bg-oliva text-marfil px-4 py-2 rounded-md shadow hover:opacity-95">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-            </svg>
+          <button className="inline-flex items-center gap-2 bg-vixo-500 hover:bg-vixo-600 text-white px-4 py-2 rounded-lg shadow-sm transition-colors">
+            <ShoppingCart className="w-4 h-4" />
             Nueva venta
           </button>
         </div>
@@ -23,81 +22,87 @@ export default function Dashboard() {
 
       {/* Metrics */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="lg:col-span-2 bg-white border border-beige-arena rounded-xl p-6 shadow-sm">
+          <div className="lg:col-span-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-sm font-medium text-gris-piedra">Ventas hoy</h3>
-              <p className="mt-2 text-2xl font-bold text-gris-piedra">$0.00</p>
+              <h3 className="text-sm font-medium text-slate-600 dark:text-slate-400">Ventas hoy</h3>
+              <p className="mt-2 text-2xl font-bold text-slate-900 dark:text-slate-50">$0.00</p>
             </div>
-            <div className="h-10 w-10 rounded-md bg-marfil flex items-center justify-center text-oliva">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1v2"/></svg>
+            <div className="h-10 w-10 rounded-lg bg-vixo-100 dark:bg-vixo-950 flex items-center justify-center text-vixo-600 dark:text-vixo-400">
+              <TrendingUp className="w-5 h-5" />
             </div>
           </div>
         </div>
 
-  <div className="bg-white border border-beige-arena rounded-xl p-5 shadow-sm">
+  <div className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-sm font-medium text-gris-piedra">Productos</h3>
-              <p className="mt-2 text-2xl font-bold text-gris-piedra">10</p>
+              <h3 className="text-sm font-medium text-slate-600 dark:text-slate-400">Productos</h3>
+              <p className="mt-2 text-2xl font-bold text-slate-900 dark:text-slate-50">10</p>
             </div>
-            <div className="h-10 w-10 rounded-md bg-marfil flex items-center justify-center text-oliva">📦</div>
+            <div className="h-10 w-10 rounded-lg bg-vixo-100 dark:bg-vixo-950 flex items-center justify-center text-vixo-600 dark:text-vixo-400">
+              <Package className="w-5 h-5" />
+            </div>
           </div>
         </div>
 
-  <div className="bg-white border border-beige-arena rounded-xl p-5 shadow-sm">
+  <div className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-sm font-medium text-gris-piedra">Clientes</h3>
-              <p className="mt-2 text-2xl font-bold text-gris-piedra">5</p>
+              <h3 className="text-sm font-medium text-slate-600 dark:text-slate-400">Clientes</h3>
+              <p className="mt-2 text-2xl font-bold text-slate-900 dark:text-slate-50">5</p>
             </div>
-            <div className="h-10 w-10 rounded-md bg-marfil flex items-center justify-center text-oliva">👥</div>
+            <div className="h-10 w-10 rounded-lg bg-blue-100 dark:bg-blue-950 flex items-center justify-center text-vixo-blue dark:text-blue-400">
+              <Users className="w-5 h-5" />
+            </div>
           </div>
         </div>
 
-  <div className="bg-white border border-beige-arena rounded-xl p-5 shadow-sm">
+  <div className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-sm font-medium text-gris-piedra">Stock bajo</h3>
-              <p className="mt-2 text-2xl font-bold text-terracota">2</p>
+              <h3 className="text-sm font-medium text-slate-600 dark:text-slate-400">Stock bajo</h3>
+              <p className="mt-2 text-2xl font-bold text-red-600 dark:text-red-400">2</p>
             </div>
-            <div className="h-10 w-10 rounded-md bg-marfil flex items-center justify-center text-terracota">⚠️</div>
+            <div className="h-10 w-10 rounded-lg bg-red-100 dark:bg-red-950 flex items-center justify-center text-red-600 dark:text-red-400">
+              <AlertTriangle className="w-5 h-5" />
+            </div>
           </div>
         </div>
       </div>
 
       {/* Chart + Recent */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-  <div className="lg:col-span-2 bg-white border border-beige-arena rounded-xl p-6 shadow-sm">
-          <h3 className="text-lg font-medium text-gris-piedra mb-4">Ventas (últimos 7 días)</h3>
-          <div className="h-48 rounded-md bg-gradient-to-r from-marfil via-beige-arena to-white flex items-end p-4">
+  <div className="lg:col-span-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-6 shadow-sm">
+          <h3 className="text-lg font-medium text-slate-900 dark:text-slate-50 mb-4">Ventas (últimos 7 días)</h3>
+          <div className="h-48 rounded-lg bg-gradient-to-br from-vixo-50 to-white dark:from-slate-900 dark:to-slate-800 flex items-end p-4">
             {/* Placeholder bars */}
             <div className="w-full flex items-end gap-2">
-              <div className="h-10 w-full max-w-[20px] bg-oliva rounded" style={{height: '30%'}} />
-              <div className="h-10 w-full max-w-[20px] bg-oliva rounded" style={{height: '60%'}} />
-              <div className="h-10 w-full max-w-[20px] bg-oliva rounded" style={{height: '45%'}} />
-              <div className="h-10 w-full max-w-[20px] bg-oliva rounded" style={{height: '70%'}} />
-              <div className="h-10 w-full max-w-[20px] bg-oliva rounded" style={{height: '55%'}} />
-              <div className="h-10 w-full max-w-[20px] bg-oliva rounded" style={{height: '80%'}} />
-              <div className="h-10 w-full max-w-[20px] bg-oliva rounded" style={{height: '40%'}} />
+              <div className="h-10 w-full max-w-[20px] bg-vixo-500 hover:bg-vixo-600 rounded transition-colors cursor-pointer" style={{height: '30%'}} />
+              <div className="h-10 w-full max-w-[20px] bg-vixo-500 hover:bg-vixo-600 rounded transition-colors cursor-pointer" style={{height: '60%'}} />
+              <div className="h-10 w-full max-w-[20px] bg-vixo-500 hover:bg-vixo-600 rounded transition-colors cursor-pointer" style={{height: '45%'}} />
+              <div className="h-10 w-full max-w-[20px] bg-vixo-500 hover:bg-vixo-600 rounded transition-colors cursor-pointer" style={{height: '70%'}} />
+              <div className="h-10 w-full max-w-[20px] bg-vixo-500 hover:bg-vixo-600 rounded transition-colors cursor-pointer" style={{height: '55%'}} />
+              <div className="h-10 w-full max-w-[20px] bg-vixo-500 hover:bg-vixo-600 rounded transition-colors cursor-pointer" style={{height: '80%'}} />
+              <div className="h-10 w-full max-w-[20px] bg-vixo-500 hover:bg-vixo-600 rounded transition-colors cursor-pointer" style={{height: '40%'}} />
             </div>
           </div>
         </div>
 
-  <div className="bg-white border border-beige-arena rounded-xl p-6 shadow-sm">
-          <h3 className="text-lg font-medium text-gris-piedra mb-4">Productos recientes</h3>
-          <ul className="space-y-3 text-sm text-gris-piedra">
-            <li className="flex items-center justify-between">
+  <div className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-6 shadow-sm">
+          <h3 className="text-lg font-medium text-slate-900 dark:text-slate-50 mb-4">Productos recientes</h3>
+          <ul className="space-y-3 text-sm text-slate-700 dark:text-slate-300">
+            <li className="flex items-center justify-between p-2 rounded hover:bg-vixo-50 dark:hover:bg-slate-800 transition-colors">
               <span>Hub USB-C Anker</span>
-              <span className="text-neutral-500">Stock: 45</span>
+              <span className="text-slate-500 dark:text-slate-400">Stock: 45</span>
             </li>
-            <li className="flex items-center justify-between">
+            <li className="flex items-center justify-between p-2 rounded hover:bg-vixo-50 dark:hover:bg-slate-800 transition-colors">
               <span>Laptop Dell XPS 13</span>
-              <span className="text-neutral-500">Stock: 15</span>
+              <span className="text-slate-500 dark:text-slate-400">Stock: 15</span>
             </li>
-            <li className="flex items-center justify-between">
+            <li className="flex items-center justify-between p-2 rounded hover:bg-vixo-50 dark:hover:bg-slate-800 transition-colors">
               <span>Auriculares Sony WH-1000XM4</span>
-              <span className="text-neutral-500">Stock: 20</span>
+              <span className="text-slate-500 dark:text-slate-400">Stock: 20</span>
             </li>
           </ul>
         </div>

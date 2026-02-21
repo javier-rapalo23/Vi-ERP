@@ -3,6 +3,12 @@ import cors from "cors";
 import ventaRoutes from "./presentation/routes/ventaRoutes";
 import productoRoutes from "./presentation/routes/productoRoutes";
 import authRoutes from "./presentation/routes/authRoutes";
+import userRoutes from "./presentation/routes/userRoutes";
+import roleRoutes from "./presentation/routes/roleRoutes";
+import permissionRoutes from "./presentation/routes/permissionRoutes";
+import supplierRoutes from "./presentation/routes/supplierRoutes";
+import purchaseRoutes from "./presentation/routes/purchaseRoutes";
+import aiRoutes from "./presentation/routes/aiRoutes";
 import { swaggerSpec, swaggerUi } from "./presentation/routes/swagger";
 import { config } from "./config/env";
 import logger from "./config/logger";
@@ -11,9 +17,32 @@ import dotenv from "dotenv";
 dotenv.config();
 const app = express();
 
+// Configuración de CORS
+const corsOptions = {
+  origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
+    // Permitir requests sin origin (como desde Postman, mismo origen, etc)
+    if (!origin) return callback(null, true);
+    
+    // Lista de orígenes permitidos
+    const allowedOrigins = [
+      config.frontendUrl, // URL del frontend desde .env
+      "http://localhost:5173", // Desarrollo local
+      "http://localhost:3000",
+      "http://localhost:4173", // Preview de Vite
+    ];
+    
+    if (allowedOrigins.includes(origin) || config.nodeEnv === "development") {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true,
+};
+
 // Middlewares
-app.use(cors());
-app.use(express.json());
+app.use(cors(corsOptions));
+app.use(express.json({ limit: "10mb" })); // Aumentar límite para imágenes base64
 
 // Health check
 app.get("/health", (req, res) => {
@@ -27,6 +56,12 @@ app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use("/api/auth", authRoutes);
 app.use("/api/ventas", ventaRoutes);
 app.use("/api/productos", productoRoutes);
+app.use("/api/users", userRoutes);
+app.use("/api/roles", roleRoutes);
+app.use("/api/permissions", permissionRoutes);
+app.use("/api/suppliers", supplierRoutes);
+app.use("/api/purchases", purchaseRoutes);
+app.use("/api/ai", aiRoutes);
 
 // Manejo de rutas no encontradas
 app.use((req, res) => {

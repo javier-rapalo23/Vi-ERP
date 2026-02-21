@@ -1,11 +1,11 @@
-import { IVentaRepository } from "../../../core/repositories/IVentaRepository";
-import { Venta } from "../../../core/entities/Venta";
+import { ISaleRepository } from "../../../core/repositories/IVentaRepository";
+import { Sale } from "../../../core/entities/Venta";
 
-export class RegistrarVentaUseCase {
-  constructor(private ventaRepo: IVentaRepository) {}
+export class RegisterSaleUseCase {
+  constructor(private saleRepo: ISaleRepository) {}
 
-  async execute(data: { clienteId: number; productos: { id: number; cantidad: number; precio: number }[] }) {
-    const venta = new Venta(data.clienteId, data.productos);
-    return await this.ventaRepo.create(venta);
+  async execute(data: { customerId: number; products: { id: number; quantity: number; price: number }[] }) {
+    const sale = new Sale(data.customerId, data.products);
+    return await this.saleRepo.create(sale);
   }
 }

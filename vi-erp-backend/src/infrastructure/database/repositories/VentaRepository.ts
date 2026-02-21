@@ -1,25 +1,25 @@
 import { prisma } from "../client";
-import { IVentaRepository } from "../../../core/repositories/IVentaRepository";
-import { Venta } from "../../../core/entities/Venta";
+import { ISaleRepository } from "../../../core/repositories/IVentaRepository";
+import { Sale } from "../../../core/entities/Venta";
 
-export class VentaRepository implements IVentaRepository {
-  async create(venta: Venta) {
-    const total = venta.calcularTotal();
-    return prisma.venta.create({
+export class SaleRepository implements ISaleRepository {
+  async create(sale: Sale) {
+    const total = sale.calculateTotal();
+    return prisma.sale.create({
       data: {
-        clienteId: venta.clienteId,
+        customerId: sale.customerId,
         total,
-        detalles: {
+        details: {
           createMany: {
-            data: venta.productos.map(p => ({
-              productoId: p.id,
-              cantidad: p.cantidad,
-              precioUnit: p.precio,
+            data: sale.products.map(p => ({
+              productId: p.id,
+              quantity: p.quantity,
+              unitPrice: p.price,
             })),
           },
         },
       },
-      include: { detalles: true },
+      include: { details: true },
     });
   }
 }

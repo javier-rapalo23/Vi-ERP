@@ -1,53 +1,53 @@
-export class Producto {
+export class Product {
   constructor(
     public id: number,
-    public nombre: string,
-    public codigo: string,
-    public precio: number,
-    public costo: number,
+    public name: string,
+    public code: string,
+    public price: number,
+    public cost: number,
     public stock: number = 0
   ) {
-    this.validar();
+    this.validate();
   }
 
-  private validar(): void {
-    if (this.precio < 0) {
-      throw new Error("El precio no puede ser negativo");
+  private validate(): void {
+    if (this.price < 0) {
+      throw new Error("Price cannot be negative");
     }
-    if (this.costo < 0) {
-      throw new Error("El costo no puede ser negativo");
+    if (this.cost < 0) {
+      throw new Error("Cost cannot be negative");
     }
     if (this.stock < 0) {
-      throw new Error("El stock no puede ser negativo");
+      throw new Error("Stock cannot be negative");
     }
-    if (!this.nombre || this.nombre.trim() === "") {
-      throw new Error("El nombre del producto es requerido");
+    if (!this.name || this.name.trim() === "") {
+      throw new Error("Product name is required");
     }
-    if (!this.codigo || this.codigo.trim() === "") {
-      throw new Error("El código del producto es requerido");
+    if (!this.code || this.code.trim() === "") {
+      throw new Error("Product code is required");
     }
   }
 
-  calcularMargen(): number {
-    if (this.costo === 0) return 0;
-    return ((this.precio - this.costo) / this.costo) * 100;
+  calculateMargin(): number {
+    if (this.cost === 0) return 0;
+    return ((this.price - this.cost) / this.cost) * 100;
   }
 
-  hayStock(cantidad: number): boolean {
-    return this.stock >= cantidad;
+  hasStock(quantity: number): boolean {
+    return this.stock >= quantity;
   }
 
-  descontarStock(cantidad: number): void {
-    if (!this.hayStock(cantidad)) {
-      throw new Error(`Stock insuficiente. Disponible: ${this.stock}, Solicitado: ${cantidad}`);
+  decreaseStock(quantity: number): void {
+    if (!this.hasStock(quantity)) {
+      throw new Error(`Insufficient stock. Available: ${this.stock}, Requested: ${quantity}`);
     }
-    this.stock -= cantidad;
+    this.stock -= quantity;
   }
 
-  agregarStock(cantidad: number): void {
-    if (cantidad <= 0) {
-      throw new Error("La cantidad a agregar debe ser positiva");
+  addStock(quantity: number): void {
+    if (quantity <= 0) {
+      throw new Error("Quantity to add must be positive");
     }
-    this.stock += cantidad;
+    this.stock += quantity;
   }
 }

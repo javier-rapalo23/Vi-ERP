@@ -4,104 +4,104 @@ import logger from "../../config/logger";
 
 const prisma = new PrismaClient();
 
-export const obtenerProductos = async (req: Request, res: Response) => {
+export const getProducts = async (req: Request, res: Response) => {
   try {
-    const productos = await prisma.producto.findMany({
-      orderBy: { nombre: "asc" },
+    const products = await prisma.product.findMany({
+      orderBy: { name: "asc" },
     });
     
-    res.json(productos);
+    res.json(products);
   } catch (error) {
-    logger.error("Error al obtener productos:", error);
-    res.status(500).json({ error: "Error al obtener productos" });
+    logger.error("Error fetching products:", error);
+    res.status(500).json({ error: "Error fetching products" });
   }
 };
 
-export const obtenerProductoPorId = async (req: Request, res: Response) => {
+export const getProductById = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const producto = await prisma.producto.findUnique({
+    const product = await prisma.product.findUnique({
       where: { id: parseInt(id) },
     });
     
-    if (!producto) {
-      return res.status(404).json({ error: "Producto no encontrado" });
+    if (!product) {
+      return res.status(404).json({ error: "Product not found" });
     }
     
-    res.json(producto);
+    res.json(product);
   } catch (error) {
-    logger.error("Error al obtener producto:", error);
-    res.status(500).json({ error: "Error al obtener producto" });
+    logger.error("Error fetching product:", error);
+    res.status(500).json({ error: "Error fetching product" });
   }
 };
 
-export const crearProducto = async (req: Request, res: Response) => {
+export const createProduct = async (req: Request, res: Response) => {
   try {
-    const { codigo, nombre, precio, costo, stock } = req.body;
+    const { code, name, price, cost, stock } = req.body;
     
-    // Verificar si ya existe un producto con ese código
-    const existe = await prisma.producto.findUnique({
-      where: { codigo },
+    // Check if product with this code already exists
+    const exists = await prisma.product.findUnique({
+      where: { code },
     });
     
-    if (existe) {
-      return res.status(400).json({ error: "Ya existe un producto con ese código" });
+    if (exists) {
+      return res.status(400).json({ error: "Product with this code already exists" });
     }
     
-    const producto = await prisma.producto.create({
+    const product = await prisma.product.create({
       data: {
-        codigo,
-        nombre,
-        precio,
-        costo,
+        code,
+        name,
+        price,
+        cost,
         stock,
       },
     });
     
-    logger.info(`Producto creado: ${producto.nombre}`);
-    res.status(201).json(producto);
+    logger.info(`Product created: ${product.name}`);
+    res.status(201).json(product);
   } catch (error) {
-    logger.error("Error al crear producto:", error);
-    res.status(500).json({ error: "Error al crear producto" });
+    logger.error("Error creating product:", error);
+    res.status(500).json({ error: "Error creating product" });
   }
 };
 
-export const actualizarProducto = async (req: Request, res: Response) => {
+export const updateProduct = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const { codigo, nombre, precio, costo, stock } = req.body;
+    const { code, name, price, cost, stock } = req.body;
     
-    const producto = await prisma.producto.update({
+    const product = await prisma.product.update({
       where: { id: parseInt(id) },
       data: {
-        codigo,
-        nombre,
-        precio,
-        costo,
+        code,
+        name,
+        price,
+        cost,
         stock,
       },
     });
     
-    logger.info(`Producto actualizado: ${producto.nombre}`);
-    res.json(producto);
+    logger.info(`Product updated: ${product.name}`);
+    res.json(product);
   } catch (error) {
-    logger.error("Error al actualizar producto:", error);
-    res.status(500).json({ error: "Error al actualizar producto" });
+    logger.error("Error updating product:", error);
+    res.status(500).json({ error: "Error updating product" });
   }
 };
 
-export const eliminarProducto = async (req: Request, res: Response) => {
+export const deleteProduct = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     
-    await prisma.producto.delete({
+    await prisma.product.delete({
       where: { id: parseInt(id) },
     });
     
-    logger.info(`Producto eliminado: ID ${id}`);
+    logger.info(`Product deleted: ID ${id}`);
     res.status(204).send();
   } catch (error) {
-    logger.error("Error al eliminar producto:", error);
-    res.status(500).json({ error: "Error al eliminar producto" });
+    logger.error("Error deleting product:", error);
+    res.status(500).json({ error: "Error deleting product" });
   }
 };
