@@ -77,21 +77,21 @@ export default function PurchaseForm() {
           let foundProduct = null;
           if (productInfo.codigo) {
             foundProduct = products.find(
-              (p) => p.codigo?.toLowerCase() === productInfo.codigo?.toLowerCase()
+              (p) => p.code?.toLowerCase() === productInfo.codigo?.toLowerCase()
             );
           }
           if (!foundProduct && productInfo.nombre) {
             foundProduct = products.find((p) =>
-              p.nombre.toLowerCase().includes(productInfo.nombre.toLowerCase())
+              p.name?.toLowerCase().includes(productInfo.nombre.toLowerCase())
             );
           }
 
           // Autocompletar campos
           if (foundProduct) {
             setSelectedProductId(foundProduct.id);
-            setUnitPrice(productInfo.precio || foundProduct.costo || foundProduct.precio);
+            setUnitPrice(productInfo.precio || foundProduct.cost || foundProduct.price);
             setQuantity(productInfo.cantidad || 1);
-            toast.success(`Producto identificado: ${foundProduct.nombre}`);
+            toast.success(`Producto identificado: ${foundProduct.name}`);
           } else {
             // Si no se encuentra el producto, mostrar la información detectada
             toast.info(
@@ -144,7 +144,7 @@ export default function PurchaseForm() {
       ...details,
       {
         productId: selectedProductId,
-        productName: product.nombre,
+        productName: product.name || 'Sin nombre',
         quantity,
         unitPrice,
       },
@@ -284,7 +284,7 @@ export default function PurchaseForm() {
                   setSelectedProductId(id);
                   const product = products.find((p) => p.id === id);
                   if (product) {
-                    setUnitPrice(product.costo || product.precio);
+                    setUnitPrice(product.cost || product.price || 0);
                   }
                 }}
                 className="md:col-span-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-50 p-2 focus:outline-none focus:ring-2 focus:ring-vixo-500 focus:border-vixo-500 transition-colors"
@@ -292,7 +292,7 @@ export default function PurchaseForm() {
                 <option value="">Seleccionar producto...</option>
                 {products.map((product) => (
                   <option key={product.id} value={product.id}>
-                    {product.nombre} - Stock: {product.stock}
+                    {product.name || 'Sin nombre'} - Stock: {product.stock ?? 0}
                   </option>
                 ))}
               </select>
