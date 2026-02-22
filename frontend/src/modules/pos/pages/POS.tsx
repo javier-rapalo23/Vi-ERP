@@ -17,8 +17,15 @@ export default function POS() {
     queryKey: ["productos"],
     queryFn: async () => {
       const res = await api.get("/productos");
-      // Mapear a Item con cantidad por defecto 1
-      return (res.data || []).map((p: any) => ({ id: p.id, name: p.name, price: p.price, cantidad: 1 } as Item));
+      // Mapear a Item con cantidad por defecto 1 y validar campos
+      return (res.data || [])
+        .filter((p: any) => p && p.id && p.name && typeof p.price === 'number')
+        .map((p: any) => ({ 
+          id: p.id, 
+          name: p.name, 
+          price: p.price, 
+          cantidad: 1 
+        } as Item));
     },
   });
 
@@ -65,7 +72,7 @@ export default function POS() {
   }
 
   const filtered = (productos as Item[]).filter(
-    (p) => p.name.toLowerCase().includes(query.toLowerCase()) || query.trim() === ""
+    (p) => p.name?.toLowerCase().includes(query.toLowerCase()) || query.trim() === ""
   );
 
   return (
@@ -106,14 +113,14 @@ export default function POS() {
               {filtered.map((p) => (
                 <div key={p.id} className="flex items-center justify-between p-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 hover:border-vixo-300 dark:hover:border-vixo-700 transition-all">
                   <div>
-                    <div className="font-medium text-slate-900 dark:text-slate-50">{p.name}</div>
+                    <div className="font-medium text-slate-900 dark:text-slate-50">{p.name || 'Sin nombre'}</div>
                     <div className="text-sm text-slate-600 dark:text-slate-400">${p.price?.toFixed(2) ?? '0.00'}</div>
                   </div>
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => addProduct(p)}
                       className="rounded-lg bg-vixo-500 hover:bg-vixo-600 px-3 py-1.5 text-white font-medium transition-colors flex items-center gap-1 shadow-sm"
-                      aria-label={`Agregar ${p.name}`}
+                      aria-label={`Agregar ${p.name || 'producto'}`}
                     >
                       <Plus className="w-4 h-4" />
                       Añadir
@@ -140,14 +147,14 @@ export default function POS() {
               {items.map((it, idx) => (
                 <li key={it.id} className="flex items-center justify-between">
                   <div className="max-w-[55%]">
-                    <div className="font-medium text-slate-900 dark:text-slate-50">{it.name}</div>
+                    <div className="font-medium text-slate-900 dark:text-slate-50">{it.name || 'Sin nombre'}</div>
                     <div className="text-sm text-slate-600 dark:text-slate-400">${it.price?.toFixed(2) ?? '0.00'}</div>
                   </div>
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => updateQty(idx, it.cantidad - 1)}
                       className="px-2 py-1 rounded-lg border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-                      aria-label={`Disminuir cantidad de ${it.name}`}
+                      aria-label={`Disminuir cantidad de ${it.name || 'producto'}`}
                     >
                       <Minus className="w-3 h-3" />
                     </button>
@@ -157,19 +164,19 @@ export default function POS() {
                       onChange={(e) => updateQty(idx, Number(e.target.value))}
                       className="w-16 text-center rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-50 p-1 focus:ring-2 focus:ring-vixo-500"
                       min={1}
-                      aria-label={`Cantidad de ${it.name}`}
+                      aria-label={`Cantidad de ${it.name || 'producto'}`}
                     />
                     <button
                       onClick={() => updateQty(idx, it.cantidad + 1)}
                       className="px-2 py-1 rounded-lg border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-                      aria-label={`Aumentar cantidad de ${it.name}`}
+                      aria-label={`Aumentar cantidad de ${it.name || 'producto'}`}
                     >
                       <Plus className="w-3 h-3" />
                     </button>
                     <button
                       onClick={() => removeItem(idx)}
                       className="ml-2 text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 transition-colors"
-                      aria-label={`Eliminar ${it.name}`}
+                      aria-label={`Eliminar ${it.name || 'producto'}`}
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>

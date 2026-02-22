@@ -34,8 +34,8 @@ export default function ProductosList() {
             {data && data.length > 0 ? (
               data.map((p) => (
                 <tr key={p.id} className="border-t border-slate-200 dark:border-slate-800 hover:bg-vixo-50 dark:hover:bg-slate-800 transition-colors">
-                  <td className="px-4 py-3 text-slate-900 dark:text-slate-50 font-medium">{p.code}</td>
-                  <td className="px-4 py-3 text-slate-900 dark:text-slate-50">{p.name}</td>
+                  <td className="px-4 py-3 text-slate-900 dark:text-slate-50 font-medium">{p.code || 'N/A'}</td>
+                  <td className="px-4 py-3 text-slate-900 dark:text-slate-50">{p.name || 'Sin nombre'}</td>
                   <td className="px-4 py-3 text-right text-slate-700 dark:text-slate-300">${p.price?.toFixed(2) ?? '0.00'}</td>
                   <td className="px-4 py-3 text-right text-slate-700 dark:text-slate-300">${p.cost?.toFixed(2) ?? '0.00'}</td>
                   <td className="px-4 py-3 text-right text-slate-700 dark:text-slate-300">{p.stock ?? 0}</td>

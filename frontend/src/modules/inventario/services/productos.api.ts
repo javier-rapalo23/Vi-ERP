@@ -15,7 +15,8 @@ export function useProductos() {
     queryKey: ["productos"],
     queryFn: async () => {
       const response = await api.get("/productos");
-      return response.data as Producto[];
+      // Filtrar productos válidos
+      return (response.data || []).filter((p: any) => p && p.id && p.name) as Producto[];
     },
   });
 }
