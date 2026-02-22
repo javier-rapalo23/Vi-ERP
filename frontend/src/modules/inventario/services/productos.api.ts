@@ -3,10 +3,10 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export type Producto = {
   id: number;
-  nombre: string;
-  codigo: string;
-  precio: number;
-  costo: number;
+  name: string;
+  code: string;
+  price: number;
+  cost: number;
   stock: number;
 };
 

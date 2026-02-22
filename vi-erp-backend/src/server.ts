@@ -29,15 +29,21 @@ const corsOptions = {
       "http://localhost:5173", // Desarrollo local
       "http://localhost:3000",
       "http://localhost:4173", // Preview de Vite
+      "https://vixo-cloud.vercel.app", // Frontend en Vercel
     ];
     
     if (allowedOrigins.includes(origin) || config.nodeEnv === "development") {
       callback(null, true);
     } else {
+      logger.warn(`CORS blocked request from origin: ${origin}`);
       callback(new Error("Not allowed by CORS"));
     }
   },
   credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  exposedHeaders: ["Content-Range", "X-Content-Range"],
+  maxAge: 86400, // 24 horas
 };
 
 // Middlewares

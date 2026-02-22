@@ -5,10 +5,10 @@ import { useCrearProducto } from "../services/productos.api";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";import { Save, X } from "lucide-react";
 const schema = z.object({
-  codigo: z.string().min(1, "El código es requerido"),
-  nombre: z.string().min(1, "El nombre es requerido"),
-  precio: z.number().min(0, "El precio debe ser mayor a 0"),
-  costo: z.number().min(0, "El costo debe ser mayor a 0"),
+  code: z.string().min(1, "El código es requerido"),
+  name: z.string().min(1, "El nombre es requerido"),
+  price: z.number().min(0, "El precio debe ser mayor a 0"),
+  cost: z.number().min(0, "El costo debe ser mayor a 0"),
   stock: z.number().min(0, "El stock no puede ser negativo"),
 });
 
@@ -47,11 +47,11 @@ export default function ProductoForm() {
               <span className="text-sm font-medium text-gris-piedra dark:text-neutral-300">Código</span>
               <input
                 className="rounded border border-beige-arena dark:border-neutral-600 bg-white dark:bg-neutral-700 text-gris-piedra dark:text-neutral-100 p-2 focus:outline-none focus:ring-2 focus:ring-oliva"
-                {...register("codigo")}
+                {...register("code")}
                 placeholder="PRD-001"
               />
-              {errors.codigo && (
-                <small className="text-terracota">{errors.codigo.message}</small>
+              {errors.code && (
+                <small className="text-terracota">{errors.code.message}</small>
               )}
             </label>
             
@@ -59,11 +59,11 @@ export default function ProductoForm() {
               <span className="text-sm font-medium text-gris-piedra dark:text-neutral-300">Nombre</span>
               <input
                 className="rounded border border-beige-arena dark:border-neutral-600 bg-white dark:bg-neutral-700 text-gris-piedra dark:text-neutral-100 p-2 focus:outline-none focus:ring-2 focus:ring-oliva"
-                {...register("nombre")}
+                {...register("name")}
                 placeholder="Producto de ejemplo"
               />
-              {errors.nombre && (
-                <small className="text-terracota">{errors.nombre.message}</small>
+              {errors.name && (
+                <small className="text-terracota">{errors.name.message}</small>
               )}
             </label>
           </div>
@@ -75,11 +75,11 @@ export default function ProductoForm() {
                 type="number"
                 step="0.01"
                 className="rounded border border-beige-arena dark:border-neutral-600 bg-white dark:bg-neutral-700 text-gris-piedra dark:text-neutral-100 p-2 focus:outline-none focus:ring-2 focus:ring-oliva"
-                {...register("precio")}
+                {...register("price", { valueAsNumber: true })}
                 placeholder="0.00"
               />
-              {errors.precio && (
-                <small className="text-terracota">{errors.precio.message}</small>
+              {errors.price && (
+                <small className="text-terracota">{errors.price.message}</small>
               )}
             </label>
             
@@ -89,11 +89,11 @@ export default function ProductoForm() {
                 type="number"
                 step="0.01"
                 className="rounded border border-beige-arena dark:border-neutral-600 bg-white dark:bg-neutral-700 text-gris-piedra dark:text-neutral-100 p-2 focus:outline-none focus:ring-2 focus:ring-oliva"
-                {...register("costo")}
+                {...register("cost", { valueAsNumber: true })}
                 placeholder="0.00"
               />
-              {errors.costo && (
-                <small className="text-terracota">{errors.costo.message}</small>
+              {errors.cost && (
+                <small className="text-terracota">{errors.cost.message}</small>
               )}
             </label>
             
@@ -102,7 +102,7 @@ export default function ProductoForm() {
               <input
                 type="number"
                 className="rounded border border-beige-arena dark:border-neutral-600 bg-white dark:bg-neutral-700 text-gris-piedra dark:text-neutral-100 p-2 focus:outline-none focus:ring-2 focus:ring-oliva"
-                {...register("stock")}
+                {...register("stock", { valueAsNumber: true })}
                 placeholder="0"
               />
               {errors.stock && (
