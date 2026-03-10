@@ -9,6 +9,7 @@ import permissionRoutes from "./presentation/routes/permissionRoutes";
 import supplierRoutes from "./presentation/routes/supplierRoutes";
 import purchaseRoutes from "./presentation/routes/purchaseRoutes";
 import aiRoutes from "./presentation/routes/aiRoutes";
+import configurationRoutes from "./presentation/routes/configurationRoutes";
 import { swaggerSpec, swaggerUi } from "./presentation/routes/swagger";
 import { config } from "./config/env";
 import logger from "./config/logger";
@@ -68,6 +69,7 @@ app.use("/api/permissions", permissionRoutes);
 app.use("/api/suppliers", supplierRoutes);
 app.use("/api/purchases", purchaseRoutes);
 app.use("/api/ai", aiRoutes);
+app.use("/api/configuration", configurationRoutes);
 
 // Manejo de rutas no encontradas
 app.use((req, res) => {

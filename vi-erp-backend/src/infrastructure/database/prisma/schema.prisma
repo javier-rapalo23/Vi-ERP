@@ -217,3 +217,16 @@ enum SaleStatus {
 }
 
 //Mantenimientos
+
+// Configuración del sistema
+model Setting {
+  id          Int      @id @default(autoincrement())
+  key         String   @unique  // Clave única: CURRENCY_NAME, CURRENCY_SYMBOL, TAX_RATE, etc.
+  name        String            // Nombre legible: "Moneda", "Símbolo", "Impuesto ISV", etc.
+  value       String            // Valor: "Lempira", "L.", "15", etc.
+  description String?           // Descripción opcional del parámetro
+  group       String?           // Agrupación: "MONEDA", "IMPUESTO", "EMPRESA", "FACTURA"
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}

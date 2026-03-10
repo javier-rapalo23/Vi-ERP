@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Users, Shield, KeyRound } from "lucide-react";
+import { Users, Shield, KeyRound, Settings } from "lucide-react";
 
 export default function MantenimientosIndex() {
   const modules = [
@@ -21,12 +21,18 @@ export default function MantenimientosIndex() {
       link: "/mantenimientos/permisos",
       Icon: KeyRound,
     },
+    {
+      title: "Configuración",
+      description: "Gestión de configuraciones del sistema",
+      link: "/mantenimientos/configuracion",
+      Icon: Settings,
+    },
   ];
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-semibold text-slate-900 dark:text-slate-50">Mantenimientos</h1>
+        <h1 className="text-2xl sm:text-3xl font-semibold text-slate-900 dark:text-slate-50">Mantenimientos</h1>
         <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
           Gestión de usuarios, roles y permisos del sistema
         </p>

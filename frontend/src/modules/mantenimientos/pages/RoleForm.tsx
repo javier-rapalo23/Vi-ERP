@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Loading from "@/shared/components/Loading";
+import BackButton from "@/shared/components/BackButton";
 import { Save, X } from "lucide-react";
 
 const schema = z.object({
@@ -92,6 +93,7 @@ export default function RoleForm() {
 
   return (
     <div className="max-w-2xl mx-auto">
+      <BackButton to="/mantenimientos/roles" />
       <div className="space-y-3 rounded border border-beige-arena dark:border-neutral-700 bg-white dark:bg-neutral-800 p-6 shadow-sm">
         <h2 className="text-2xl font-bold text-gris-piedra dark:text-neutral-100">
           {isEditing ? "Editar Rol" : "Nuevo Rol"}

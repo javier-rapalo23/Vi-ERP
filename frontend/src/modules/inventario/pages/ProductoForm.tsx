@@ -3,7 +3,9 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useCrearProducto } from "../services/productos.api";
 import { toast } from "sonner";
-import { useNavigate } from "react-router-dom";import { Save, X } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import BackButton from "@/shared/components/BackButton";
+import { Save, X } from "lucide-react";
 const schema = z.object({
   code: z.string().min(1, "El código es requerido"),
   name: z.string().min(1, "El nombre es requerido"),
@@ -38,6 +40,7 @@ export default function ProductoForm() {
 
   return (
     <div className="max-w-2xl mx-auto">
+      <BackButton to="/inventario" />
       <div className="space-y-3 rounded border border-beige-arena dark:border-neutral-700 bg-white dark:bg-neutral-800 p-6 shadow-sm">
         <h2 className="text-2xl font-bold text-gris-piedra dark:text-neutral-100">Nuevo Producto</h2>
         

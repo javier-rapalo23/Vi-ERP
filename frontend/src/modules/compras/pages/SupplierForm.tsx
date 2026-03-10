@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect } from "react";
 import Loading from "@/shared/components/Loading";
+import BackButton from "@/shared/components/BackButton";
 import { Save, X } from "lucide-react";
 
 const schema = z.object({
@@ -70,6 +71,7 @@ export default function SupplierForm() {
 
   return (
     <div className="max-w-2xl mx-auto">
+      <BackButton to="/compras/proveedores" />
       <div className="space-y-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 p-6 shadow-sm">
         <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-50">
           {isEditing ? "Editar Proveedor" : "Nuevo Proveedor"}

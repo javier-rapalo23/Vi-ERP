@@ -17,6 +17,7 @@ const RolesList = lazy(() => import("@/modules/mantenimientos/pages/RolesList"))
 const RoleForm = lazy(() => import("@/modules/mantenimientos/pages/RoleForm"));
 const PermissionsList = lazy(() => import("@/modules/mantenimientos/pages/PermissionsList"));
 const PermissionForm = lazy(() => import("@/modules/mantenimientos/pages/PermissionForm"));
+const ConfigurationPage = lazy(() => import("@/modules/mantenimientos/pages/ConfigurationPage"));
 
 // Compras
 const ComprasIndex = lazy(() => import("@/modules/compras/pages/ComprasIndex"));
@@ -165,6 +166,14 @@ export const router = createBrowserRouter([
                 ),
               },
             ],
+          },
+          {
+            path: "configuracion",
+            element: (
+              <Protected roles={["admin"]}>
+                <ConfigurationPage />
+              </Protected>
+            ),
           },
         ],
       },

@@ -9,15 +9,10 @@ export default function Dashboard() {
       {/* Header / Hero */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-semibold text-slate-900 dark:text-slate-50">Hola, {user?.name || user?.email || "Usuario"}</h1>
+          <h1 className="text-2xl sm:text-3xl font-semibold text-slate-900 dark:text-slate-50">Hola, {user?.name || user?.email || "Usuario"}</h1>
           <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">Panel de control — Rol: <span className="font-medium text-vixo-600 dark:text-vixo-400">{role}</span></p>
         </div>
-        <div className="flex items-center gap-3">
-          <button className="inline-flex items-center gap-2 bg-vixo-500 hover:bg-vixo-600 text-white px-4 py-2 rounded-lg shadow-sm transition-colors">
-            <ShoppingCart className="w-4 h-4" />
-            Nueva venta
-          </button>
-        </div>
+       
       </div>
 
       {/* Metrics */}

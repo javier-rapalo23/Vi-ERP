@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import Loading from "@/shared/components/Loading";
+import BackButton from "@/shared/components/BackButton";
 import { Save, X, Plus, Trash2, Camera, Loader2 } from "lucide-react";
 
 const schema = z.object({
@@ -192,6 +193,7 @@ export default function PurchaseForm() {
 
   return (
     <div className="max-w-5xl mx-auto">
+      <BackButton to="/compras" />
       <div className="space-y-4">
         <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-50">Nueva Compra</h2>
 
