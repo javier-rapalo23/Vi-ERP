@@ -1,5 +1,5 @@
 import { useAuthStore } from "@/shared/store/auth.store";
-import { ShoppingCart, TrendingUp, Package, Users, AlertTriangle } from "lucide-react";
+import { TrendingUp, Package, Users, AlertTriangle } from "lucide-react";
 
 export default function Dashboard() {
   const { user, role } = useAuthStore();
