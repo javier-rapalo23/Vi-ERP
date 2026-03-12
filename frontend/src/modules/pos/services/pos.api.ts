@@ -1,8 +1,6 @@
 import api from "@/shared/api/axios";
 import { useMutation } from "@tanstack/react-query";
 
-type Linea = { id: number; cantidad: number; precio: number };
-
 export function useRegistrarVenta() {
   return useMutation({
     mutationFn: async (payload: { customerId: number; products: { id: number; quantity: number; price: number }[] }) => {
