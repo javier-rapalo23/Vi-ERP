@@ -76,6 +76,7 @@ export default function Navbar() {
           {role === "admin" && (
             <>
               <NavLink to="/inventario" className={navLinkClass}>Inventario</NavLink>
+              <NavLink to="/ventas" className={navLinkClass}>Ventas</NavLink>
               <NavLink to="/compras" className={navLinkClass}>Compras</NavLink>
               <NavLink to="/mantenimientos" className={navLinkClass}>Mantenimientos</NavLink>
             </>
@@ -146,6 +147,7 @@ export default function Navbar() {
           {role === "admin" && (
             <>
               <NavLink to="/inventario" className={mobileNavLinkClass}>Inventario</NavLink>
+              <NavLink to="/ventas" className={mobileNavLinkClass}>Ventas</NavLink>
               <NavLink to="/compras" className={mobileNavLinkClass}>Compras</NavLink>
               <NavLink to="/mantenimientos" className={mobileNavLinkClass}>Mantenimientos</NavLink>
             </>

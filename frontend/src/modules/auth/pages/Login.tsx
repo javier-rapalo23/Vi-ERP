@@ -107,9 +107,7 @@ export default function Login() {
             </button>
           </form>
 
-          <div className="mt-6 text-center text-sm text-slate-600 dark:text-slate-400">
-            ¿No tienes cuenta? <Link to="#" className="text-vixo-600 dark:text-vixo-400 font-medium hover:text-vixo-700 dark:hover:text-vixo-300">Regístrate</Link>
-          </div>
+          
         </div>
       </div>
     </div>

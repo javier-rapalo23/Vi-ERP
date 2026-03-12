@@ -19,6 +19,11 @@ const PermissionsList = lazy(() => import("@/modules/mantenimientos/pages/Permis
 const PermissionForm = lazy(() => import("@/modules/mantenimientos/pages/PermissionForm"));
 const ConfigurationPage = lazy(() => import("@/modules/mantenimientos/pages/ConfigurationPage"));
 
+// Ventas
+const VentasIndex = lazy(() => import("@/modules/ventas/pages/VentasIndex"));
+const ClientesList = lazy(() => import("@/modules/ventas/pages/ClientesList"));
+const ClienteForm = lazy(() => import("@/modules/ventas/pages/ClienteForm"));
+
 // Compras
 const ComprasIndex = lazy(() => import("@/modules/compras/pages/ComprasIndex"));
 const SuppliersList = lazy(() => import("@/modules/compras/pages/SuppliersList"));
@@ -66,6 +71,56 @@ export const router = createBrowserRouter([
                 <ProductoForm />
               </Protected>
             ),
+          },
+          {
+            path: ":id/editar",
+            element: (
+              <Protected roles={["admin"]}>
+                <ProductoForm />
+              </Protected>
+            ),
+          },
+        ],
+      },
+      {
+        path: "ventas",
+        children: [
+          {
+            index: true,
+            element: (
+              <Protected roles={["admin", "cajero"]}>
+                <VentasIndex />
+              </Protected>
+            ),
+          },
+          {
+            path: "clientes",
+            children: [
+              {
+                index: true,
+                element: (
+                  <Protected roles={["admin", "cajero"]}>
+                    <ClientesList />
+                  </Protected>
+                ),
+              },
+              {
+                path: "nuevo",
+                element: (
+                  <Protected roles={["admin", "cajero"]}>
+                    <ClienteForm />
+                  </Protected>
+                ),
+              },
+              {
+                path: ":id/editar",
+                element: (
+                  <Protected roles={["admin", "cajero"]}>
+                    <ClienteForm />
+                  </Protected>
+                ),
+              },
+            ],
           },
         ],
       },

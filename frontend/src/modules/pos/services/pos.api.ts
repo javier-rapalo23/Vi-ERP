@@ -5,7 +5,7 @@ type Linea = { id: number; cantidad: number; precio: number };
 
 export function useRegistrarVenta() {
   return useMutation({
-    mutationFn: async (payload: { clienteId: number; productos: Linea[] }) => {
+    mutationFn: async (payload: { customerId: number; products: { id: number; quantity: number; price: number }[] }) => {
       const response = await api.post("/ventas", payload);
       return response.data;
     },

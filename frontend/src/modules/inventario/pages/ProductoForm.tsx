@@ -1,10 +1,12 @@
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useCrearProducto } from "../services/productos.api";
+import { useCrearProducto, useActualizarProducto, useProducto } from "../services/productos.api";
 import { toast } from "sonner";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import BackButton from "@/shared/components/BackButton";
+import Loading from "@/shared/components/Loading";
+import { useEffect } from "react";
 import { Save, X } from "lucide-react";
 const schema = z.object({
   code: z.string().min(1, "El código es requerido"),
@@ -17,32 +19,68 @@ const schema = z.object({
 type FormValues = z.infer<typeof schema>;
 
 export default function ProductoForm() {
+  const { id } = useParams();
+  const isEditing = !!id;
+  const productId = id ? parseInt(id, 10) : 0;
+
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
     reset,
-  } = useForm<FormValues>({ resolver: zodResolver(schema) });
+  } = useForm<FormValues>({
+    resolver: zodResolver(schema),
+    defaultValues: {
+      code: "",
+      name: "",
+      price: 0,
+      cost: 0,
+      stock: 0,
+    },
+  });
   
-  const { mutateAsync } = useCrearProducto();
+  const { mutateAsync: createProduct } = useCrearProducto();
+  const { mutateAsync: updateProduct } = useActualizarProducto();
+  const { data: product, isLoading } = useProducto(productId);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (product && isEditing) {
+      reset({
+        code: product.code,
+        name: product.name,
+        price: product.price,
+        cost: product.cost,
+        stock: product.stock,
+      });
+    }
+  }, [product, isEditing, reset]);
 
   const onSubmit = async (v: FormValues) => {
     try {
-      await mutateAsync(v);
-      toast.success("Producto creado exitosamente");
+      if (isEditing) {
+        await updateProduct({ id: productId, data: v });
+        toast.success("Producto actualizado exitosamente");
+      } else {
+        await createProduct(v);
+        toast.success("Producto creado exitosamente");
+      }
       reset();
       navigate("/inventario");
     } catch (error: any) {
-      toast.error(error?.response?.data?.error ?? "Error al crear producto");
+      toast.error(error?.response?.data?.error ?? "Error al guardar producto");
     }
   };
+
+  if (isEditing && isLoading) return <Loading />;
 
   return (
     <div className="max-w-2xl mx-auto">
       <BackButton to="/inventario" />
       <div className="space-y-3 rounded border border-beige-arena dark:border-neutral-700 bg-white dark:bg-neutral-800 p-6 shadow-sm">
-        <h2 className="text-2xl font-bold text-gris-piedra dark:text-neutral-100">Nuevo Producto</h2>
+        <h2 className="text-2xl font-bold text-gris-piedra dark:text-neutral-100">
+          {isEditing ? "Editar Producto" : "Nuevo Producto"}
+        </h2>
         
         <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4 mt-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

@@ -1,40 +1,28 @@
 import { Link } from "react-router-dom";
-import { Users, Shield, KeyRound, Settings } from "lucide-react";
+import { Users, ShoppingCart } from "lucide-react";
 
-export default function MantenimientosIndex() {
+export default function VentasIndex() {
   const modules = [
     {
-      title: "Usuarios",
-      description: "Gestión de usuarios del sistema",
-      link: "/mantenimientos/usuarios",
+      title: "Clientes",
+      description: "Gestión de clientes registrados",
+      link: "/ventas/clientes",
       Icon: Users,
     },
     {
-      title: "Roles",
-      description: "Gestión de roles y permisos",
-      link: "/mantenimientos/roles",
-      Icon: Shield,
-    },
-    {
-      title: "Permisos",
-      description: "Gestión de permisos del sistema",
-      link: "/mantenimientos/permisos",
-      Icon: KeyRound,
-    },
-    {
-      title: "Configuración",
-      description: "Gestión de configuraciones del sistema",
-      link: "/mantenimientos/configuracion",
-      Icon: Settings,
+      title: "Historial de Ventas",
+      description: "Consulta y seguimiento de ventas realizadas",
+      link: "/ventas/historial",
+      Icon: ShoppingCart,
     },
   ];
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl sm:text-3xl font-semibold text-slate-900 dark:text-slate-50">Mantenimientos</h1>
+        <h1 className="text-2xl sm:text-3xl font-semibold text-slate-900 dark:text-slate-50">Ventas</h1>
         <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
-          Gestión de usuarios, permisos y configuraciones del sistema
+          Gestión de clientes e historial de ventas
         </p>
       </div>
 

@@ -6,7 +6,9 @@ const prisma = new PrismaClient();
 
 export const getProducts = async (req: Request, res: Response) => {
   try {
+    const includeInactive = req.query.includeInactive === "true";
     const products = await prisma.product.findMany({
+      where: includeInactive ? undefined : { isActive: true },
       orderBy: { name: "asc" },
     });
     
@@ -37,7 +39,7 @@ export const getProductById = async (req: Request, res: Response) => {
 
 export const createProduct = async (req: Request, res: Response) => {
   try {
-    const { code, name, price, cost, stock } = req.body;
+    const { code, name, price, cost, stock, isActive } = req.body;
     
     // Check if product with this code already exists
     const exists = await prisma.product.findUnique({
@@ -55,6 +57,7 @@ export const createProduct = async (req: Request, res: Response) => {
         price,
         cost,
         stock,
+        isActive: typeof isActive === "boolean" ? isActive : true,
       },
     });
     
@@ -69,17 +72,19 @@ export const createProduct = async (req: Request, res: Response) => {
 export const updateProduct = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const { code, name, price, cost, stock } = req.body;
+    const { code, name, price, cost, stock, isActive } = req.body;
+
+    const updateData: Record<string, unknown> = {};
+    if (code !== undefined) updateData.code = code;
+    if (name !== undefined) updateData.name = name;
+    if (price !== undefined) updateData.price = price;
+    if (cost !== undefined) updateData.cost = cost;
+    if (stock !== undefined) updateData.stock = stock;
+    if (typeof isActive === "boolean") updateData.isActive = isActive;
     
     const product = await prisma.product.update({
       where: { id: parseInt(id) },
-      data: {
-        code,
-        name,
-        price,
-        cost,
-        stock,
-      },
+      data: updateData,
     });
     
     logger.info(`Product updated: ${product.name}`);
@@ -93,12 +98,13 @@ export const updateProduct = async (req: Request, res: Response) => {
 export const deleteProduct = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    
-    await prisma.product.delete({
+
+    await prisma.product.update({
       where: { id: parseInt(id) },
+      data: { isActive: false },
     });
-    
-    logger.info(`Product deleted: ID ${id}`);
+
+    logger.info(`Product deactivated: ID ${id}`);
     res.status(204).send();
   } catch (error) {
     logger.error("Error deleting product:", error);
