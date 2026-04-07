@@ -2,6 +2,9 @@ import { z } from "zod";
 
 export const createSaleSchema = z.object({
   customerId: z.number().int().positive("Customer ID must be a positive number"),
+  paymentMethod: z.enum(["CASH", "TRANSFER", "CARD"], {
+    errorMap: () => ({ message: "Payment method must be CASH, TRANSFER or CARD" }),
+  }),
   products: z.array(
     z.object({
       id: z.number().int().positive("Product ID must be a positive number"),

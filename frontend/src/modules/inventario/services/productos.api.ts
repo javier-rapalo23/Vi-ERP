@@ -5,6 +5,7 @@ export type Producto = {
   id: number;
   name: string;
   code: string;
+  barcode?: string | null;
   price: number;
   cost: number;
   stock: number;

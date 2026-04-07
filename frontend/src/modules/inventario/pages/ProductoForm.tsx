@@ -9,7 +9,8 @@ import Loading from "@/shared/components/Loading";
 import { useEffect } from "react";
 import { Save, X } from "lucide-react";
 const schema = z.object({
-  code: z.string().min(1, "El código es requerido"),
+  code: z.string().min(1, "El código de producto es requerido"),
+  barcode: z.string().trim().optional().or(z.literal("")),
   name: z.string().min(1, "El nombre es requerido"),
   price: z.number().min(0, "El precio debe ser mayor a 0"),
   cost: z.number().min(0, "El costo debe ser mayor a 0"),
@@ -32,6 +33,7 @@ export default function ProductoForm() {
     resolver: zodResolver(schema),
     defaultValues: {
       code: "",
+      barcode: "",
       name: "",
       price: 0,
       cost: 0,
@@ -48,6 +50,7 @@ export default function ProductoForm() {
     if (product && isEditing) {
       reset({
         code: product.code,
+        barcode: product.barcode ?? "",
         name: product.name,
         price: product.price,
         cost: product.cost,
@@ -58,11 +61,16 @@ export default function ProductoForm() {
 
   const onSubmit = async (v: FormValues) => {
     try {
+      const payload = {
+        ...v,
+        barcode: v.barcode?.trim() ? v.barcode.trim() : null,
+      };
+
       if (isEditing) {
-        await updateProduct({ id: productId, data: v });
+        await updateProduct({ id: productId, data: payload });
         toast.success("Producto actualizado exitosamente");
       } else {
-        await createProduct(v);
+        await createProduct(payload);
         toast.success("Producto creado exitosamente");
       }
       reset();
@@ -85,7 +93,7 @@ export default function ProductoForm() {
         <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4 mt-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <label className="grid gap-1">
-              <span className="text-sm font-medium text-gris-piedra dark:text-neutral-300">Código</span>
+              <span className="text-sm font-medium text-gris-piedra dark:text-neutral-300">Código de producto</span>
               <input
                 className="rounded border border-beige-arena dark:border-neutral-600 bg-white dark:bg-neutral-700 text-gris-piedra dark:text-neutral-100 p-2 focus:outline-none focus:ring-2 focus:ring-oliva"
                 {...register("code")}
@@ -95,8 +103,20 @@ export default function ProductoForm() {
                 <small className="text-terracota">{errors.code.message}</small>
               )}
             </label>
-            
+
             <label className="grid gap-1">
+              <span className="text-sm font-medium text-gris-piedra dark:text-neutral-300">Código de barras (opcional)</span>
+              <input
+                className="rounded border border-beige-arena dark:border-neutral-600 bg-white dark:bg-neutral-700 text-gris-piedra dark:text-neutral-100 p-2 focus:outline-none focus:ring-2 focus:ring-oliva"
+                {...register("barcode")}
+                placeholder="7501031311309"
+              />
+              {errors.barcode && (
+                <small className="text-terracota">{errors.barcode.message}</small>
+              )}
+            </label>
+            
+            <label className="grid gap-1 md:col-span-2">
               <span className="text-sm font-medium text-gris-piedra dark:text-neutral-300">Nombre</span>
               <input
                 className="rounded border border-beige-arena dark:border-neutral-600 bg-white dark:bg-neutral-700 text-gris-piedra dark:text-neutral-100 p-2 focus:outline-none focus:ring-2 focus:ring-oliva"

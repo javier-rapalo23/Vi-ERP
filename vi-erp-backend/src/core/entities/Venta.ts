@@ -1,6 +1,7 @@
 export class Sale {
   constructor(
     public customerId: number,
+    public paymentMethod: "CASH" | "TRANSFER" | "CARD",
     public products: { id: number; quantity: number; price: number }[]
   ) {}
 

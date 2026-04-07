@@ -11,6 +11,7 @@ import purchaseRoutes from "./presentation/routes/purchaseRoutes";
 import aiRoutes from "./presentation/routes/aiRoutes";
 import configurationRoutes from "./presentation/routes/configurationRoutes";
 import customerRoutes from "./presentation/routes/customerRoutes";
+import shiftRoutes from "./presentation/routes/shiftRoutes";
 import { swaggerSpec, swaggerUi } from "./presentation/routes/swagger";
 import { config } from "./config/env";
 import logger from "./config/logger";
@@ -72,6 +73,7 @@ app.use("/api/purchases", purchaseRoutes);
 app.use("/api/ai", aiRoutes);
 app.use("/api/configuration", configurationRoutes);
 app.use("/api/customers", customerRoutes);
+app.use("/api/cajas", shiftRoutes);
 
 // Manejo de rutas no encontradas
 app.use((req, res) => {

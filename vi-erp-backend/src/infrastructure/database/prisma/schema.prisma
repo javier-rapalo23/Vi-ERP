@@ -20,6 +20,7 @@ model User {
   updatedAt DateTime   @updatedAt
   sessions  session[]
   userRoles UserRole[]
+  shifts    Shift[]
 }
 
 model Role {
@@ -66,6 +67,7 @@ model Product {
   id                    Int                    @id @default(autoincrement())
   name                  String
   code                  String                 @unique
+  barcode               String?                @unique
   price                 Float
   cost                  Float
   stock                 Int                    @default(0)
@@ -93,12 +95,17 @@ model Customer {
 
 model Sale {
   id                 Int                 @id @default(autoincrement())
+  invoiceNumber      String              @unique
+  invoiceSnapshot    Json?
   customerId         Int
+  shiftId            Int?
+  paymentMethod      PaymentMethod       @default(CASH)
   total              Float
   status             SaleStatus          @default(PENDING)
   date               DateTime            @default(now())
   dueDate            DateTime?
   customer           Customer            @relation(fields: [customerId], references: [id])
+  shift              Shift?              @relation(fields: [shiftId], references: [id])
   details            SaleDetail[]
   accountsReceivable AccountsReceivable?
 }
@@ -217,7 +224,32 @@ enum SaleStatus {
   CANCELLED
 }
 
-//Mantenimientos
+enum PaymentMethod {
+  CASH
+  TRANSFER
+  CARD
+}
+
+enum ShiftStatus {
+  OPEN
+  CLOSED
+}
+
+// Cash Register Shifts
+model Shift {
+  id             Int       @id @default(autoincrement())
+  userId         Int
+  user           User      @relation(fields: [userId], references: [id])
+  openingAmount  Float
+  closingAmount  Float?
+  expectedAmount Float?    // calculated: openingAmount + total sales
+  variance       Float?    // calculated: closingAmount - expectedAmount
+  status         ShiftStatus @default(OPEN)
+  notes          String?
+  openedAt       DateTime  @default(now())
+  closedAt       DateTime?
+  sales          Sale[]
+}
 
 // Configuración del sistema
 model Setting {

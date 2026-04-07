@@ -40,7 +40,8 @@ export default function ProductosList() {
         <table className="w-full text-sm">
           <thead className="bg-slate-100 dark:bg-slate-800">
             <tr>
-              <th className="px-4 py-3 text-left text-slate-700 dark:text-slate-300 font-semibold">Código</th>
+              <th className="px-4 py-3 text-left text-slate-700 dark:text-slate-300 font-semibold">Código producto</th>
+              <th className="px-4 py-3 text-left text-slate-700 dark:text-slate-300 font-semibold">Código barras</th>
               <th className="px-4 py-3 text-left text-slate-700 dark:text-slate-300 font-semibold">Nombre</th>
               <th className="px-4 py-3 text-right text-slate-700 dark:text-slate-300 font-semibold">Precio</th>
               <th className="px-4 py-3 text-right text-slate-700 dark:text-slate-300 font-semibold">Costo</th>
@@ -53,6 +54,7 @@ export default function ProductosList() {
               data.map((p) => (
                 <tr key={p.id} className="border-t border-slate-200 dark:border-slate-800 hover:bg-vixo-50 dark:hover:bg-slate-800 transition-colors">
                   <td className="px-4 py-3 text-slate-900 dark:text-slate-50 font-medium">{p.code || 'N/A'}</td>
+                  <td className="px-4 py-3 text-slate-700 dark:text-slate-300">{p.barcode || 'N/A'}</td>
                   <td className="px-4 py-3 text-slate-900 dark:text-slate-50">{p.name || 'Sin nombre'}</td>
                   <td className="px-4 py-3 text-right text-slate-700 dark:text-slate-300">{currencySymbol}{p.price?.toFixed(2) ?? '0.00'}</td>
                   <td className="px-4 py-3 text-right text-slate-700 dark:text-slate-300">{currencySymbol}{p.cost?.toFixed(2) ?? '0.00'}</td>
@@ -76,7 +78,7 @@ export default function ProductosList() {
               ))
             ) : (
               <tr>
-                <td colSpan={6} className="px-4 py-8 text-center text-slate-500 dark:text-slate-400">
+                <td colSpan={7} className="px-4 py-8 text-center text-slate-500 dark:text-slate-400">
                   No hay productos registrados
                 </td>
               </tr>

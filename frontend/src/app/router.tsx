@@ -23,6 +23,7 @@ const ConfigurationPage = lazy(() => import("@/modules/mantenimientos/pages/Conf
 const VentasIndex = lazy(() => import("@/modules/ventas/pages/VentasIndex"));
 const ClientesList = lazy(() => import("@/modules/ventas/pages/ClientesList"));
 const ClienteForm = lazy(() => import("@/modules/ventas/pages/ClienteForm"));
+const HistorialVentas = lazy(() => import("@/modules/ventas/pages/HistorialVentas"));
 
 // Compras
 const ComprasIndex = lazy(() => import("@/modules/compras/pages/ComprasIndex"));
@@ -121,6 +122,14 @@ export const router = createBrowserRouter([
                 ),
               },
             ],
+          },
+          {
+            path: "historial",
+            element: (
+              <Protected roles={["admin", "cajero"]}>
+                <HistorialVentas />
+              </Protected>
+            ),
           },
         ],
       },

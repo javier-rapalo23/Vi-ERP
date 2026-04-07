@@ -10,6 +10,7 @@
     "migrate:deploy": "prisma migrate deploy --schema=src/infrastructure/database/prisma/schema.prisma",
     "studio": "prisma studio --schema=src/infrastructure/database/prisma/schema.prisma",
     "seed": "tsx prisma/seed.ts",
+    "test:concurrency-sale": "tsx scripts/test-sale-concurrency.ts",
     "db:reset": "prisma migrate reset --force --schema=src/infrastructure/database/prisma/schema.prisma && npm run seed",
     "postinstall": "prisma generate --schema=src/infrastructure/database/prisma/schema.prisma"
   },
@@ -43,5 +44,8 @@
   "description": "Vi-ERP es un sistema ERP modular diseñado con una arquitectura limpia utilizando Node.js, PostgreSQL y Prisma ORM. Este proyecto tiene como objetivo proporcionar una API escalable y mantenible para gestionar diferentes módulos de un ERP, como ventas, inventario, compras, contabilidad y empleados.",
   "keywords": [],
   "author": "",
-  "type": "commonjs"
+  "type": "commonjs",
+  "prisma": {
+    "schema": "src/infrastructure/database/prisma/schema.prisma"
+  }
 }

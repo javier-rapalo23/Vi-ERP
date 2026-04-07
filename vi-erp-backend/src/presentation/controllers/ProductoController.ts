@@ -39,20 +39,27 @@ export const getProductById = async (req: Request, res: Response) => {
 
 export const createProduct = async (req: Request, res: Response) => {
   try {
-    const { code, name, price, cost, stock, isActive } = req.body;
+    const { code, barcode, name, price, cost, stock, isActive } = req.body;
     
-    // Check if product with this code already exists
-    const exists = await prisma.product.findUnique({
-      where: { code },
-    });
+    const normalizedBarcode = typeof barcode === "string" && barcode.trim() !== "" ? barcode.trim() : null;
+
+    const exists = await prisma.product.findUnique({ where: { code } });
     
     if (exists) {
-      return res.status(400).json({ error: "Product with this code already exists" });
+      return res.status(400).json({ error: "Ya existe un producto con ese código de producto" });
+    }
+
+    if (normalizedBarcode) {
+      const barcodeExists = await prisma.product.findUnique({ where: { barcode: normalizedBarcode } });
+      if (barcodeExists) {
+        return res.status(400).json({ error: "Ya existe un producto con ese código de barras" });
+      }
     }
     
     const product = await prisma.product.create({
       data: {
         code,
+        barcode: normalizedBarcode,
         name,
         price,
         cost,
@@ -72,10 +79,36 @@ export const createProduct = async (req: Request, res: Response) => {
 export const updateProduct = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const { code, name, price, cost, stock, isActive } = req.body;
+    const { code, barcode, name, price, cost, stock, isActive } = req.body;
+    const productId = parseInt(id);
 
     const updateData: Record<string, unknown> = {};
-    if (code !== undefined) updateData.code = code;
+    if (code !== undefined) {
+      const codeExists = await prisma.product.findFirst({
+        where: { code, NOT: { id: productId } },
+      });
+
+      if (codeExists) {
+        return res.status(400).json({ error: "Ya existe un producto con ese código de producto" });
+      }
+
+      updateData.code = code;
+    }
+    if (barcode !== undefined) {
+      const normalizedBarcode = typeof barcode === "string" && barcode.trim() !== "" ? barcode.trim() : null;
+
+      if (normalizedBarcode) {
+        const barcodeExists = await prisma.product.findFirst({
+          where: { barcode: normalizedBarcode, NOT: { id: productId } },
+        });
+
+        if (barcodeExists) {
+          return res.status(400).json({ error: "Ya existe un producto con ese código de barras" });
+        }
+      }
+
+      updateData.barcode = normalizedBarcode;
+    }
     if (name !== undefined) updateData.name = name;
     if (price !== undefined) updateData.price = price;
     if (cost !== undefined) updateData.cost = cost;
@@ -83,7 +116,7 @@ export const updateProduct = async (req: Request, res: Response) => {
     if (typeof isActive === "boolean") updateData.isActive = isActive;
     
     const product = await prisma.product.update({
-      where: { id: parseInt(id) },
+      where: { id: productId },
       data: updateData,
     });
     

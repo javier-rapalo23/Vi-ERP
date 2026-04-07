@@ -3,6 +3,7 @@ export class Product {
     public id: number,
     public name: string,
     public code: string,
+    public barcode: string | null,
     public price: number,
     public cost: number,
     public stock: number = 0
