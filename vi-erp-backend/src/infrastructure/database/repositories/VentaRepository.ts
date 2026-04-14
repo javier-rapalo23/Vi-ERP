@@ -157,6 +157,7 @@ export class SaleRepository implements ISaleRepository {
                   stock: {
                     decrement: item.quantity,
                   },
+                  lastSaleDate: new Date(),
                 },
               });
 

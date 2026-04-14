@@ -44,6 +44,118 @@ async function main() {
 
   console.log("✅ Roles creados");
 
+  console.log("🔐 Creando permisos por módulo y acción...");
+
+  const permissionCatalog = [
+    // Ventas
+    { name: "ventas.ver", description: "Ver ventas" },
+    { name: "ventas.crear", description: "Crear ventas" },
+    { name: "ventas.editar", description: "Editar ventas" },
+    { name: "ventas.anular", description: "Anular ventas" },
+    // Compras
+    { name: "compras.ver", description: "Ver compras" },
+    { name: "compras.crear", description: "Crear compras" },
+    { name: "compras.editar", description: "Editar compras" },
+    { name: "compras.anular", description: "Anular compras" },
+    // Productos
+    { name: "productos.ver", description: "Ver productos" },
+    { name: "productos.crear", description: "Crear productos" },
+    { name: "productos.editar", description: "Editar productos" },
+    { name: "productos.anular", description: "Anular productos" },
+    // Clientes
+    { name: "clientes.ver", description: "Ver clientes" },
+    { name: "clientes.crear", description: "Crear clientes" },
+    { name: "clientes.editar", description: "Editar clientes" },
+    { name: "clientes.anular", description: "Anular clientes" },
+    // Proveedores
+    { name: "proveedores.ver", description: "Ver proveedores" },
+    { name: "proveedores.crear", description: "Crear proveedores" },
+    { name: "proveedores.editar", description: "Editar proveedores" },
+    { name: "proveedores.anular", description: "Anular proveedores" },
+    // Caja
+    { name: "cajas.ver", description: "Ver caja y turnos" },
+    { name: "cajas.crear", description: "Abrir turnos de caja" },
+    { name: "cajas.editar", description: "Cerrar/editar turnos de caja" },
+    { name: "cajas.anular", description: "Anular operaciones de caja" },
+    // Configuración
+    { name: "configuracion.ver", description: "Ver configuración" },
+    { name: "configuracion.editar", description: "Editar configuración" },
+    // Seguridad
+    { name: "usuarios.ver", description: "Ver usuarios" },
+    { name: "usuarios.crear", description: "Crear usuarios" },
+    { name: "usuarios.editar", description: "Editar usuarios" },
+    { name: "usuarios.anular", description: "Anular usuarios" },
+    { name: "roles.ver", description: "Ver roles" },
+    { name: "roles.crear", description: "Crear roles" },
+    { name: "roles.editar", description: "Editar roles" },
+    { name: "roles.anular", description: "Anular roles" },
+    { name: "permisos.ver", description: "Ver permisos" },
+    { name: "permisos.crear", description: "Crear permisos" },
+    { name: "permisos.editar", description: "Editar permisos" },
+    { name: "permisos.anular", description: "Anular permisos" },
+    // IA
+    { name: "ia.crear", description: "Usar análisis de IA" },
+  ];
+
+  for (const permission of permissionCatalog) {
+    await prisma.permission.upsert({
+      where: { name: permission.name },
+      update: { description: permission.description },
+      create: permission,
+    });
+  }
+
+  const allPermissions = await prisma.permission.findMany();
+  const permissionIdByName = new Map(allPermissions.map((p) => [p.name, p.id]));
+
+  // Admin: todos los permisos
+  await prisma.rolePermission.deleteMany({ where: { roleId: adminRole.id } });
+  await prisma.rolePermission.createMany({
+    data: allPermissions.map((permission) => ({
+      roleId: adminRole.id,
+      permissionId: permission.id,
+    })),
+    skipDuplicates: true,
+  });
+
+  // Cajero: ventas, clientes, caja y lectura de productos
+  const cajeroPermissionNames = [
+    "ventas.ver",
+    "ventas.crear",
+    "ventas.editar",
+    "ventas.anular",
+    "clientes.ver",
+    "clientes.crear",
+    "clientes.editar",
+    "productos.ver",
+    "cajas.ver",
+    "cajas.crear",
+    "cajas.editar",
+  ];
+
+  await prisma.rolePermission.deleteMany({ where: { roleId: cajeroRole.id } });
+  await prisma.rolePermission.createMany({
+    data: cajeroPermissionNames
+      .map((name) => permissionIdByName.get(name))
+      .filter((id): id is number => typeof id === "number")
+      .map((permissionId) => ({ roleId: cajeroRole.id, permissionId })),
+    skipDuplicates: true,
+  });
+
+  // Usuario básico: solo lectura operativa
+  const userPermissionNames = ["ventas.ver", "productos.ver", "clientes.ver"];
+
+  await prisma.rolePermission.deleteMany({ where: { roleId: userRole.id } });
+  await prisma.rolePermission.createMany({
+    data: userPermissionNames
+      .map((name) => permissionIdByName.get(name))
+      .filter((id): id is number => typeof id === "number")
+      .map((permissionId) => ({ roleId: userRole.id, permissionId })),
+    skipDuplicates: true,
+  });
+
+  console.log("✅ Permisos creados y asignados");
+
   console.log("👥 Creando usuarios...");
 
   // Hash de contraseñas

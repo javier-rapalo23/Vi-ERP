@@ -8,13 +8,30 @@ import BackButton from "@/shared/components/BackButton";
 import Loading from "@/shared/components/Loading";
 import { useEffect } from "react";
 import { Save, X } from "lucide-react";
+
+const productCodeRegex = /^[A-Za-z0-9_-]{3,30}$/;
+const barcodeRegex = /^\d{8,14}$/;
+
 const schema = z.object({
-  code: z.string().min(1, "El código de producto es requerido"),
-  barcode: z.string().trim().optional().or(z.literal("")),
+  code: z
+    .string()
+    .min(1, "El c�digo de producto es requerido")
+    .refine((v) => productCodeRegex.test(v.trim()), {
+      message: "Usa 3-30 caracteres: letras, n�meros, guion (-) o guion bajo (_)"
+    }),
+  barcode: z
+    .string()
+    .trim()
+    .optional()
+    .or(z.literal(""))
+    .refine((v) => !v || barcodeRegex.test(v), {
+      message: "El c�digo de barras debe tener solo d�gitos (8 a 14)"
+    }),
   name: z.string().min(1, "El nombre es requerido"),
-  price: z.number().min(0, "El precio debe ser mayor a 0"),
-  cost: z.number().min(0, "El costo debe ser mayor a 0"),
+  price: z.number().min(0, "El precio no puede ser negativo"),
+  cost: z.number().min(0, "El costo no puede ser negativo"),
   stock: z.number().min(0, "El stock no puede ser negativo"),
+  minStock: z.number().min(0, "El stock m�nimo no puede ser negativo"),
 });
 
 type FormValues = z.infer<typeof schema>;
@@ -38,9 +55,10 @@ export default function ProductoForm() {
       price: 0,
       cost: 0,
       stock: 0,
+      minStock: 0,
     },
   });
-  
+
   const { mutateAsync: createProduct } = useCrearProducto();
   const { mutateAsync: updateProduct } = useActualizarProducto();
   const { data: product, isLoading } = useProducto(productId);
@@ -55,6 +73,7 @@ export default function ProductoForm() {
         price: product.price,
         cost: product.cost,
         stock: product.stock,
+        minStock: product.minStock ?? 0,
       });
     }
   }, [product, isEditing, reset]);
@@ -63,6 +82,7 @@ export default function ProductoForm() {
     try {
       const payload = {
         ...v,
+        code: v.code.trim().toUpperCase(),
         barcode: v.barcode?.trim() ? v.barcode.trim() : null,
       };
 
@@ -89,33 +109,31 @@ export default function ProductoForm() {
         <h2 className="text-2xl font-bold text-gris-piedra dark:text-neutral-100">
           {isEditing ? "Editar Producto" : "Nuevo Producto"}
         </h2>
-        
+
         <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4 mt-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <label className="grid gap-1">
-              <span className="text-sm font-medium text-gris-piedra dark:text-neutral-300">Código de producto</span>
+              <span className="text-sm font-medium text-gris-piedra dark:text-neutral-300">C�digo de producto</span>
               <input
                 className="rounded border border-beige-arena dark:border-neutral-600 bg-white dark:bg-neutral-700 text-gris-piedra dark:text-neutral-100 p-2 focus:outline-none focus:ring-2 focus:ring-oliva"
                 {...register("code")}
                 placeholder="PRD-001"
               />
-              {errors.code && (
-                <small className="text-terracota">{errors.code.message}</small>
-              )}
+              <small className="text-xs text-slate-500 dark:text-slate-400">�nico. 3-30 caracteres: letras, n�meros, - o _.</small>
+              {errors.code && <small className="text-terracota">{errors.code.message}</small>}
             </label>
 
             <label className="grid gap-1">
-              <span className="text-sm font-medium text-gris-piedra dark:text-neutral-300">Código de barras (opcional)</span>
+              <span className="text-sm font-medium text-gris-piedra dark:text-neutral-300">C�digo de barras (opcional)</span>
               <input
                 className="rounded border border-beige-arena dark:border-neutral-600 bg-white dark:bg-neutral-700 text-gris-piedra dark:text-neutral-100 p-2 focus:outline-none focus:ring-2 focus:ring-oliva"
                 {...register("barcode")}
                 placeholder="7501031311309"
               />
-              {errors.barcode && (
-                <small className="text-terracota">{errors.barcode.message}</small>
-              )}
+              <small className="text-xs text-slate-500 dark:text-slate-400">�nico. Solo d�gitos de 8 a 14.</small>
+              {errors.barcode && <small className="text-terracota">{errors.barcode.message}</small>}
             </label>
-            
+
             <label className="grid gap-1 md:col-span-2">
               <span className="text-sm font-medium text-gris-piedra dark:text-neutral-300">Nombre</span>
               <input
@@ -123,12 +141,10 @@ export default function ProductoForm() {
                 {...register("name")}
                 placeholder="Producto de ejemplo"
               />
-              {errors.name && (
-                <small className="text-terracota">{errors.name.message}</small>
-              )}
+              {errors.name && <small className="text-terracota">{errors.name.message}</small>}
             </label>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <label className="grid gap-1">
               <span className="text-sm font-medium text-gris-piedra dark:text-neutral-300">Precio</span>
@@ -139,11 +155,9 @@ export default function ProductoForm() {
                 {...register("price", { valueAsNumber: true })}
                 placeholder="0.00"
               />
-              {errors.price && (
-                <small className="text-terracota">{errors.price.message}</small>
-              )}
+              {errors.price && <small className="text-terracota">{errors.price.message}</small>}
             </label>
-            
+
             <label className="grid gap-1">
               <span className="text-sm font-medium text-gris-piedra dark:text-neutral-300">Costo</span>
               <input
@@ -153,11 +167,9 @@ export default function ProductoForm() {
                 {...register("cost", { valueAsNumber: true })}
                 placeholder="0.00"
               />
-              {errors.cost && (
-                <small className="text-terracota">{errors.cost.message}</small>
-              )}
+              {errors.cost && <small className="text-terracota">{errors.cost.message}</small>}
             </label>
-            
+
             <label className="grid gap-1">
               <span className="text-sm font-medium text-gris-piedra dark:text-neutral-300">Stock (opcional)</span>
               <input
@@ -166,12 +178,24 @@ export default function ProductoForm() {
                 {...register("stock", { valueAsNumber: true })}
                 placeholder="0"
               />
-              {errors.stock && (
-                <small className="text-terracota">{errors.stock.message}</small>
-              )}
+              {errors.stock && <small className="text-terracota">{errors.stock.message}</small>}
             </label>
           </div>
-          
+
+          <div className="grid grid-cols-1 gap-4">
+            <label className="grid gap-1">
+              <span className="text-sm font-medium text-gris-piedra dark:text-neutral-300">Stock M�nimo (opcional)</span>
+              <input
+                type="number"
+                className="rounded border border-beige-arena dark:border-neutral-600 bg-white dark:bg-neutral-700 text-gris-piedra dark:text-neutral-100 p-2 focus:outline-none focus:ring-2 focus:ring-oliva"
+                {...register("minStock", { valueAsNumber: true })}
+                placeholder="0"
+              />
+              <small className="text-xs text-slate-500 dark:text-slate-400">Unidades que activan alerta de stock bajo. Defecto: 0</small>
+              {errors.minStock && <small className="text-terracota">{errors.minStock.message}</small>}
+            </label>
+          </div>
+
           <div className="flex gap-2 mt-2">
             <button
               type="submit"
@@ -181,7 +205,7 @@ export default function ProductoForm() {
               <Save className="w-4 h-4" />
               {isSubmitting ? "Guardando..." : "Guardar"}
             </button>
-            
+
             <button
               type="button"
               onClick={() => navigate("/inventario")}

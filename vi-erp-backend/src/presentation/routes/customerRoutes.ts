@@ -7,15 +7,16 @@ import {
   deactivateCustomer,
 } from "../controllers/CustomerController";
 import { authMiddleware } from "../../infrastructure/middlewares/authMiddleware";
+import { requirePermission } from "../../infrastructure/middlewares/permissionMiddleware";
 
 const router = Router();
 
 router.use(authMiddleware);
 
-router.get("/", getCustomers);
-router.get("/:id", getCustomerById);
-router.post("/", createCustomer);
-router.put("/:id", updateCustomer);
-router.delete("/:id", deactivateCustomer);
+router.get("/", requirePermission("clientes", "ver"), getCustomers);
+router.get("/:id", requirePermission("clientes", "ver"), getCustomerById);
+router.post("/", requirePermission("clientes", "crear"), createCustomer);
+router.put("/:id", requirePermission("clientes", "editar"), updateCustomer);
+router.delete("/:id", requirePermission("clientes", "anular"), deactivateCustomer);
 
 export default router;

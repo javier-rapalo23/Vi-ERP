@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { prisma } from "../../infrastructure/database/client";
 import logger from "../../config/logger";
+import { logCriticalAction } from "../../infrastructure/services/audit.service";
 
 export const getSettings = async (req: Request, res: Response) => {
   try {
@@ -36,6 +37,10 @@ export const updateSettings = async (req: Request, res: Response) => {
       return res.status(400).json({ error: "Se requiere un arreglo de actualizaciones" });
     }
 
+    const keys = updates.map((u) => u.key);
+    const existing = await prisma.setting.findMany({ where: { key: { in: keys } } });
+    const existingByKey = new Map(existing.map((s) => [s.key, s]));
+
     const results = await Promise.all(
       updates.map(({ key, value }) =>
         prisma.setting.update({
@@ -44,6 +49,21 @@ export const updateSettings = async (req: Request, res: Response) => {
         })
       )
     );
+
+    for (const updated of results) {
+      const previous = existingByKey.get(updated.key);
+      if (previous && previous.value !== updated.value) {
+        await logCriticalAction(req, {
+          module: "configuracion",
+          action: "editar",
+          entity: "Setting",
+          entityId: updated.id,
+          oldValues: { key: updated.key, value: previous.value },
+          newValues: { key: updated.key, value: updated.value },
+          metadata: { mode: "bulk" },
+        });
+      }
+    }
 
     res.json(results);
   } catch (error: any) {
@@ -64,10 +84,24 @@ export const updateSettingByKey = async (req: Request, res: Response) => {
       return res.status(400).json({ error: "El campo value es requerido" });
     }
 
+    const previous = await prisma.setting.findUnique({ where: { key } });
+
     const setting = await prisma.setting.update({
       where: { key },
       data: { value: String(value) },
     });
+
+    if (previous && previous.value !== setting.value) {
+      await logCriticalAction(req, {
+        module: "configuracion",
+        action: "editar",
+        entity: "Setting",
+        entityId: setting.id,
+        oldValues: { key: setting.key, value: previous.value },
+        newValues: { key: setting.key, value: setting.value },
+        metadata: { mode: "single-key" },
+      });
+    }
 
     res.json(setting);
   } catch (error: any) {

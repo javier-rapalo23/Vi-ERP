@@ -61,6 +61,9 @@ export default function ProductosList() {
                   <td className="px-4 py-3 text-right text-slate-700 dark:text-slate-300">{p.stock ?? 0}</td>
                   <td className="px-4 py-3 text-right">
                     <div className="flex items-center justify-end gap-3">
+                      <Link to={`/inventario/${p.id}/kardex`} className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-sm">
+                        Kardex
+                      </Link>
                       <Link to={`/inventario/${p.id}/editar`} className="text-vixo-600 hover:text-vixo-800 dark:hover:text-vixo-400 text-sm">
                         Editar
                       </Link>

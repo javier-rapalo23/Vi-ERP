@@ -7,6 +7,7 @@ interface AuthState {
   role: Role | null;
   user?: { id: number; name: string; email: string } | null;
   login: (data: { token: string; role: Role; user?: any }) => void;
+  setToken: (token: string) => void;
   logout: () => void;
 }
 
@@ -14,14 +15,19 @@ export const useAuthStore = create<AuthState>((set) => ({
   token: localStorage.getItem("token"),
   role: (localStorage.getItem("role") as Role) || null,
   user: JSON.parse(localStorage.getItem("user") || "null"),
-  
+
   login: ({ token, role, user }) => {
     localStorage.setItem("token", token);
     localStorage.setItem("role", role);
     if (user) localStorage.setItem("user", JSON.stringify(user));
     set({ token, role, user });
   },
-  
+
+  setToken: (token) => {
+    localStorage.setItem("token", token);
+    set((state) => ({ token, role: state.role, user: state.user }));
+  },
+
   logout: () => {
     localStorage.removeItem("token");
     localStorage.removeItem("role");

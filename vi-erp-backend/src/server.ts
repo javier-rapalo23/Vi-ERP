@@ -12,6 +12,7 @@ import aiRoutes from "./presentation/routes/aiRoutes";
 import configurationRoutes from "./presentation/routes/configurationRoutes";
 import customerRoutes from "./presentation/routes/customerRoutes";
 import shiftRoutes from "./presentation/routes/shiftRoutes";
+import dashboardRoutes from "./presentation/routes/dashboardRoutes";
 import { swaggerSpec, swaggerUi } from "./presentation/routes/swagger";
 import { config } from "./config/env";
 import logger from "./config/logger";
@@ -63,6 +64,7 @@ app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Rutas
 app.use("/api/auth", authRoutes);
+app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/ventas", ventaRoutes);
 app.use("/api/productos", productoRoutes);
 app.use("/api/users", userRoutes);

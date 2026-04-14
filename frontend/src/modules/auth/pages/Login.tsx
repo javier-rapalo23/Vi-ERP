@@ -8,11 +8,17 @@ import { toast } from "sonner";
 import { Mail, Lock, LogIn } from "lucide-react";
 
 const schema = z.object({
-  email: z.string().email("Email invÃ¡lido"),
-  password: z.string().min(4, "MÃ­nimo 4 caracteres"),
+  email: z.string().email("Email inválido"),
+  password: z.string().min(4, "Mínimo 4 caracteres"),
 });
 
 type FormValues = z.infer<typeof schema>;
+
+function formatRetrySeconds(seconds?: number): string {
+  if (!seconds || seconds <= 0) return "unos minutos";
+  const minutes = Math.ceil(seconds / 60);
+  return `${minutes} min`;
+}
 
 export default function Login() {
   const {
@@ -20,7 +26,7 @@ export default function Login() {
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({ resolver: zodResolver(schema) });
-  
+
   const login = useAuthStore((s) => s.login);
   const navigate = useNavigate();
   const location = useLocation();
@@ -30,22 +36,26 @@ export default function Login() {
     try {
       const data = await loginApi(v.email, v.password);
       login(data);
-      toast.success("Â¡Bienvenido!");
+      toast.success("¡Bienvenido!");
       navigate(from, { replace: true });
     } catch (err: any) {
-      toast.error(err?.response?.data?.error ?? "Error de autenticaciÃ³n");
+      const apiError = err?.response?.data;
+      if (apiError?.code === "LOGIN_BLOCKED") {
+        toast.error(`Cuenta bloqueada temporalmente. Intenta en ${formatRetrySeconds(apiError.retryAfter)}.`);
+        return;
+      }
+      toast.error(apiError?.error ?? "Error de autenticación");
     }
   };
 
   return (
-  <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-vixo-50 to-white dark:from-slate-950 dark:to-slate-900 py-12 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-vixo-50 to-white dark:from-slate-950 dark:to-slate-900 py-12 px-4">
       <div className="w-full max-w-md">
-  <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl p-8">
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl p-8">
           <div className="flex items-center justify-center gap-3 mb-6">
-            
             <div className="text-center">
               <img src="/Vixo Claro.svg" alt="Vixo logo" className="h-30 w-60 mx-auto" />
-              <p className="text-sm text-slate-600 dark:text-slate-400">Inicia sesiÃ³n para continuar</p>
+              <p className="text-sm text-slate-600 dark:text-slate-400">Inicia sesión para continuar</p>
             </div>
           </div>
 
@@ -71,7 +81,7 @@ export default function Login() {
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-slate-700 dark:text-slate-300">ContraseÃ±a</label>
+              <label htmlFor="password" className="block text-sm font-medium text-slate-700 dark:text-slate-300">Contraseña</label>
               <div className="mt-1 relative rounded-md shadow-sm">
                 <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400 dark:text-slate-500">
                   <Lock className="h-5 w-5" />
@@ -94,7 +104,7 @@ export default function Login() {
                 <input type="checkbox" className="h-4 w-4 rounded border-slate-300 dark:border-slate-700 text-vixo-500 focus:ring-vixo-500" />
                 <span className="ml-2 text-slate-700 dark:text-slate-300">Recordarme</span>
               </label>
-              <Link to="#" className="text-sm text-vixo-600 dark:text-vixo-400 hover:text-vixo-700 dark:hover:text-vixo-300 font-medium">Â¿Olvidaste tu contraseÃ±a?</Link>
+              <Link to="#" className="text-sm text-vixo-600 dark:text-vixo-400 hover:text-vixo-700 dark:hover:text-vixo-300 font-medium">¿Olvidaste tu contraseña?</Link>
             </div>
 
             <button
@@ -106,8 +116,6 @@ export default function Login() {
               {isSubmitting ? "Entrando..." : "Entrar"}
             </button>
           </form>
-
-          
         </div>
       </div>
     </div>

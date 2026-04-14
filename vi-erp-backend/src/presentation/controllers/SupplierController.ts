@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { SupplierRepository } from "../../infrastructure/database/repositories/SupplierRepository";
+import { logCriticalAction } from "../../infrastructure/services/audit.service";
 
 const supplierRepo = new SupplierRepository();
 
@@ -73,7 +74,23 @@ export class SupplierController {
   static async delete(req: Request, res: Response) {
     try {
       const id = parseInt(req.params.id);
+      const existing = await supplierRepo.findById(id);
+      if (!existing) {
+        return res.status(404).json({ error: "Proveedor no encontrado" });
+      }
+
       await supplierRepo.delete(id);
+
+      await logCriticalAction(req, {
+        module: "proveedores",
+        action: "anular",
+        entity: "Supplier",
+        entityId: id,
+        oldValues: { isActive: existing.isActive },
+        newValues: { isActive: false },
+        metadata: { name: existing.name, email: existing.email },
+      });
+
       res.status(204).send();
     } catch (error: any) {
       res.status(500).json({ error: error.message });

@@ -9,6 +9,7 @@ export type Producto = {
   price: number;
   cost: number;
   stock: number;
+  minStock?: number;
   isActive?: boolean;
 };
 
@@ -73,3 +74,42 @@ export function useDesactivarProducto() {
     },
   });
 }
+
+// Kardex types and hooks
+export type KardexLine = {
+  id: number;
+  date: string; // ISO date
+  reference: string;
+  description?: string | null;
+  type: "IN" | "OUT" | "ADJ";
+  quantity: number;
+  costPerUnit: number;
+  runningBalance: number;
+  transactionValue: number;
+  userName?: string | null;
+};
+
+export type KardexSummary = {
+  productId: number;
+  code: string;
+  name: string;
+  currentStock: number;
+  totalEntriesQty: number;
+  totalExitsQty: number;
+  totalEntriesValue: number;
+  totalExitsValue: number;
+  averageCost: number;
+  lines: KardexLine[];
+};
+
+export function useProductKardex(productId: number) {
+  return useQuery({
+    queryKey: ["kardex", productId],
+    queryFn: async () => {
+      const response = await api.get(`/productos/${productId}/kardex`);
+      return response.data as KardexSummary;
+    },
+    enabled: !!productId,
+  });
+}
+

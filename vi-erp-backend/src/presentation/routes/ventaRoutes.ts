@@ -1,10 +1,14 @@
 import { Router } from "express";
 import { createSale, getSaleInvoice, getSalesHistory, getSalesTotalsByPeriod } from "../controllers/VentaController";
+import { authMiddleware } from "../../infrastructure/middlewares/authMiddleware";
+import { requirePermission } from "../../infrastructure/middlewares/permissionMiddleware";
 
 const router = Router();
-router.get("/totales-periodo", getSalesTotalsByPeriod);
-router.get("/", getSalesHistory);
-router.get("/:id/invoice", getSaleInvoice);
-router.post("/", createSale);
+router.use(authMiddleware);
+
+router.get("/totales-periodo", requirePermission("ventas", "ver"), getSalesTotalsByPeriod);
+router.get("/", requirePermission("ventas", "ver"), getSalesHistory);
+router.get("/:id/invoice", requirePermission("ventas", "ver"), getSaleInvoice);
+router.post("/", requirePermission("ventas", "crear"), createSale);
 
 export default router;

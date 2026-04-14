@@ -7,14 +7,18 @@ import {
   deleteUser,
   assignRolesToUser,
 } from "../controllers/UserController";
+import { authMiddleware } from "../../infrastructure/middlewares/authMiddleware";
+import { requirePermission } from "../../infrastructure/middlewares/permissionMiddleware";
 
 const router = Router();
 
-router.get("/", getUsers);
-router.get("/:id", getUserById);
-router.post("/", createUser);
-router.put("/:id", updateUser);
-router.delete("/:id", deleteUser);
-router.post("/:id/roles", assignRolesToUser);
+router.use(authMiddleware);
+
+router.get("/", requirePermission("usuarios", "ver"), getUsers);
+router.get("/:id", requirePermission("usuarios", "ver"), getUserById);
+router.post("/", requirePermission("usuarios", "crear"), createUser);
+router.put("/:id", requirePermission("usuarios", "editar"), updateUser);
+router.delete("/:id", requirePermission("usuarios", "anular"), deleteUser);
+router.post("/:id/roles", requirePermission("usuarios", "editar"), assignRolesToUser);
 
 export default router;

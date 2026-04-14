@@ -4,6 +4,7 @@ import { UsuarioRepository } from "../../infrastructure/database/repositories/Us
 import { Usuario } from "../../core/entities/Usuario";
 import bcrypt from "bcrypt";
 import logger from "../../config/logger";
+import { logCriticalAction } from "../../infrastructure/services/audit.service";
 
 const userRoleRepository = new UserRoleRepository();
 const usuarioRepository = new UsuarioRepository();
@@ -71,6 +72,8 @@ export const updateUser = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const { name, email, password, role, isActive, roleIds } = req.body;
+    const userId = parseInt(id);
+    const existingUser = await usuarioRepository.findById(userId);
     
     const updateData: any = {};
     
@@ -83,15 +86,27 @@ export const updateUser = async (req: Request, res: Response) => {
     }
     
     // Update user
-    await usuarioRepository.update(parseInt(id), updateData);
+    await usuarioRepository.update(userId, updateData);
     
     // Update roles if provided
     if (roleIds && Array.isArray(roleIds)) {
-      await userRoleRepository.assignRolesToUser(parseInt(id), roleIds);
+      await userRoleRepository.assignRolesToUser(userId, roleIds);
     }
     
     // Get updated user with roles
-    const userWithRoles = await userRoleRepository.getUserWithRoles(parseInt(id));
+    const userWithRoles = await userRoleRepository.getUserWithRoles(userId);
+
+    if (existingUser && typeof isActive === "boolean" && existingUser.isActive !== isActive) {
+      await logCriticalAction(req, {
+        module: "usuarios",
+        action: "anular",
+        entity: "User",
+        entityId: userId,
+        oldValues: { isActive: existingUser.isActive },
+        newValues: { isActive },
+        metadata: { email: existingUser.email, name: existingUser.name },
+      });
+    }
     
     res.json(userWithRoles);
   } catch (error: any) {
@@ -109,7 +124,22 @@ export const updateUser = async (req: Request, res: Response) => {
 export const deleteUser = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    await usuarioRepository.delete(parseInt(id));
+    const userId = parseInt(id);
+    const existingUser = await usuarioRepository.findById(userId);
+    await usuarioRepository.delete(userId);
+
+    if (existingUser) {
+      await logCriticalAction(req, {
+        module: "usuarios",
+        action: "anular",
+        entity: "User",
+        entityId: userId,
+        oldValues: { isActive: existingUser.isActive },
+        newValues: { deleted: true },
+        metadata: { email: existingUser.email, name: existingUser.name },
+      });
+    }
+
     res.status(204).send();
   } catch (error: any) {
     logger.error("Error deleting user:", error);

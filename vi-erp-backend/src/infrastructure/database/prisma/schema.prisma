@@ -8,19 +8,22 @@ datasource db {
 }
 // Users
 model User {
-  id        Int        @id @default(autoincrement())
-  name      String
-  email     String     @unique
-  password  String
-  role      String
-  isActive  Boolean    @default(true)
-  createdAt DateTime   @default(now())
-  createdBy Int?
-  updatedBy Int?
-  updatedAt DateTime   @updatedAt
-  sessions  session[]
-  userRoles UserRole[]
-  shifts    Shift[]
+  id                     Int                    @id @default(autoincrement())
+  name                   String
+  email                  String                 @unique
+  password               String
+  role                   String
+  isActive               Boolean                @default(true)
+  createdAt              DateTime               @default(now())
+  createdBy              Int?
+  updatedBy              Int?
+  updatedAt              DateTime               @updatedAt
+  sessions               session[]
+  userRoles              UserRole[]
+  shifts                 Shift[]
+  auditLogs              AuditLog[]
+  loginAttempts          LoginAttempt[]
+  inventoryTransactions  InventoryTransaction[]
 }
 
 model Role {
@@ -71,6 +74,8 @@ model Product {
   price                 Float
   cost                  Float
   stock                 Int                    @default(0)
+  minStock              Int                    @default(0)
+  lastSaleDate          DateTime?
   isActive              Boolean                @default(true)
   createdAt             DateTime               @default(now())
   saleDetails           SaleDetail[]
@@ -142,12 +147,24 @@ model CustomerPayment {
 }
 
 model InventoryTransaction {
-  id        Int      @id @default(autoincrement())
-  productId Int
-  quantity  Int
-  type      String   // "IN" for purchases, "OUT" for sales
-  date      DateTime @default(now())
-  product   Product  @relation(fields: [productId], references: [id])
+  id            Int      @id @default(autoincrement())
+  productId     Int
+  quantity      Int
+  type          String   // "IN" for purchases, "OUT" for sales, "ADJ" for adjustments
+  reference     String   @default("MANUAL") // "SALE", "PURCHASE", "ADJUSTMENT", "TRANSFER"
+  referenceId   Int?     // Foreign key to Sale, Purchase, etc.
+  userId        Int?     // User who made the transaction
+  costPerUnit   Float    @default(0) // Cost/selling price per unit at time of transaction
+  description   String?  // Additional notes
+  date          DateTime @default(now())
+  createdAt     DateTime @default(now())
+  product       Product  @relation(fields: [productId], references: [id])
+  user          User?    @relation(fields: [userId], references: [id])
+
+  @@index([productId])
+  @@index([date])
+  @@index([reference])
+  @@index([productId, date])
 }
 
 
@@ -262,4 +279,34 @@ model Setting {
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+model AuditLog {
+  id        Int      @id @default(autoincrement())
+  userId    Int?
+  module    String
+  action    String
+  entity    String
+  entityId  Int?
+  oldValues Json?
+  newValues Json?
+  metadata  Json?
+  createdAt DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id])
+}
+
+model LoginAttempt {
+  id          Int      @id @default(autoincrement())
+  userId      Int?
+  email       String
+  ipAddress   String?
+  success     Boolean
+  blockedUntil DateTime?
+  createdAt   DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id])
+
+  @@index([email, createdAt])
+  @@index([ipAddress, createdAt])
 }

@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { prisma } from "../../infrastructure/database/client";
 import logger from "../../config/logger";
+import { logCriticalAction } from "../../infrastructure/services/audit.service";
 
 export const getCustomers = async (req: Request, res: Response) => {
   try {
@@ -70,10 +71,24 @@ export const updateCustomer = async (req: Request, res: Response) => {
 export const deactivateCustomer = async (req: Request, res: Response) => {
   try {
     const id = parseInt(req.params.id);
+    const existing = await prisma.customer.findUnique({ where: { id } });
+    if (!existing) return res.status(404).json({ error: "Cliente no encontrado" });
+
     await prisma.customer.update({
       where: { id },
       data: { isActive: false },
     });
+
+    await logCriticalAction(req, {
+      module: "clientes",
+      action: "anular",
+      entity: "Customer",
+      entityId: id,
+      oldValues: { isActive: existing.isActive },
+      newValues: { isActive: false },
+      metadata: { name: existing.name, email: existing.email },
+    });
+
     res.json({ message: "Cliente desactivado exitosamente" });
   } catch (err: any) {
     logger.error("Error deactivating customer:", err);

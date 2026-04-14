@@ -8,6 +8,8 @@ const Dashboard = lazy(() => import("@/modules/dashboard/pages/Dashboard"));
 const POS = lazy(() => import("@/modules/pos/pages/POS"));
 const ProductosList = lazy(() => import("@/modules/inventario/pages/ProductosList"));
 const ProductoForm = lazy(() => import("@/modules/inventario/pages/ProductoForm"));
+const AlertasInventario = lazy(() => import("@/modules/inventario/pages/AlertasInventario"));
+const KardexProducto = lazy(() => import("@/modules/inventario/pages/KardexProducto"));
 
 // Mantenimientos
 const MantenimientosIndex = lazy(() => import("@/modules/mantenimientos/pages/MantenimientosIndex"));
@@ -62,6 +64,22 @@ export const router = createBrowserRouter([
             element: (
               <Protected roles={["admin"]}>
                 <ProductosList />
+              </Protected>
+            ),
+          },
+          {
+            path: "alertas",
+            element: (
+              <Protected roles={["admin"]}>
+                <AlertasInventario />
+              </Protected>
+            ),
+          },
+          {
+            path: ":productId/kardex",
+            element: (
+              <Protected roles={["admin"]}>
+                <KardexProducto />
               </Protected>
             ),
           },
