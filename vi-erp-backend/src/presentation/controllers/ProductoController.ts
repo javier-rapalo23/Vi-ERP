@@ -56,7 +56,7 @@ export const createProduct = async (req: Request, res: Response) => {
 
     if (codeExists) {
       return res.status(400).json({
-        error: "Ya existe un producto con ese c�digo de producto",
+        error: "Ya existe un producto con ese código de producto",
         field: "code",
         rule: "unique",
       });
@@ -74,7 +74,7 @@ export const createProduct = async (req: Request, res: Response) => {
 
       if (barcodeExists) {
         return res.status(400).json({
-          error: "Ya existe un producto con ese c�digo de barras",
+          error: "Ya existe un producto con ese código de barras",
           field: "barcode",
           rule: "unique",
         });
@@ -99,14 +99,14 @@ export const createProduct = async (req: Request, res: Response) => {
   } catch (error: any) {
     if (error?.name === "ZodError") {
       return res.status(400).json({
-        error: "Datos de producto inv�lidos",
+        error: "Datos de producto inválidos",
         details: error.issues,
       });
     }
 
     if (error?.code === "P2002") {
       return res.status(400).json({
-        error: "C�digo de producto o c�digo de barras duplicado",
+        error: "Código de producto o código de barras duplicado",
         rule: "unique",
       });
     }
@@ -138,7 +138,7 @@ export const updateProduct = async (req: Request, res: Response) => {
 
       if (codeExists) {
         return res.status(400).json({
-          error: "Ya existe un producto con ese c�digo de producto",
+          error: "Ya existe un producto con ese código de producto",
           field: "code",
           rule: "unique",
         });
@@ -158,7 +158,7 @@ export const updateProduct = async (req: Request, res: Response) => {
 
         if (barcodeExists) {
           return res.status(400).json({
-            error: "Ya existe un producto con ese c�digo de barras",
+            error: "Ya existe un producto con ese código de barras",
             field: "barcode",
             rule: "unique",
           });
@@ -213,14 +213,14 @@ export const updateProduct = async (req: Request, res: Response) => {
   } catch (error: any) {
     if (error?.name === "ZodError") {
       return res.status(400).json({
-        error: "Datos de producto inv�lidos",
+        error: "Datos de producto inválidos",
         details: error.issues,
       });
     }
 
     if (error?.code === "P2002") {
       return res.status(400).json({
-        error: "C�digo de producto o c�digo de barras duplicado",
+        error: "Código de producto o código de barras duplicado",
         rule: "unique",
       });
     }

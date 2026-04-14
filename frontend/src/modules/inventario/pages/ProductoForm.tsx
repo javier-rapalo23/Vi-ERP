@@ -15,9 +15,9 @@ const barcodeRegex = /^\d{8,14}$/;
 const schema = z.object({
   code: z
     .string()
-    .min(1, "El c�digo de producto es requerido")
+    .min(1, "El código de producto es requerido")
     .refine((v) => productCodeRegex.test(v.trim()), {
-      message: "Usa 3-30 caracteres: letras, n�meros, guion (-) o guion bajo (_)"
+      message: "Usa 3-30 caracteres: letras, números, guion (-) o guion bajo (_)"
     }),
   barcode: z
     .string()
@@ -25,13 +25,13 @@ const schema = z.object({
     .optional()
     .or(z.literal(""))
     .refine((v) => !v || barcodeRegex.test(v), {
-      message: "El c�digo de barras debe tener solo d�gitos (8 a 14)"
+      message: "El código de barras debe tener solo dígitos (8 a 14)"
     }),
   name: z.string().min(1, "El nombre es requerido"),
   price: z.number().min(0, "El precio no puede ser negativo"),
   cost: z.number().min(0, "El costo no puede ser negativo"),
   stock: z.number().min(0, "El stock no puede ser negativo"),
-  minStock: z.number().min(0, "El stock m�nimo no puede ser negativo"),
+  minStock: z.number().min(0, "El stock mínimo no puede ser negativo"),
 });
 
 type FormValues = z.infer<typeof schema>;
@@ -113,24 +113,24 @@ export default function ProductoForm() {
         <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4 mt-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <label className="grid gap-1">
-              <span className="text-sm font-medium text-gris-piedra dark:text-neutral-300">C�digo de producto</span>
+              <span className="text-sm font-medium text-gris-piedra dark:text-neutral-300">Código de producto</span>
               <input
                 className="rounded border border-beige-arena dark:border-neutral-600 bg-white dark:bg-neutral-700 text-gris-piedra dark:text-neutral-100 p-2 focus:outline-none focus:ring-2 focus:ring-oliva"
                 {...register("code")}
                 placeholder="PRD-001"
               />
-              <small className="text-xs text-slate-500 dark:text-slate-400">�nico. 3-30 caracteres: letras, n�meros, - o _.</small>
+              <small className="text-xs text-slate-500 dark:text-slate-400">Único. 3-30 caracteres: letras, números, - o _.</small>
               {errors.code && <small className="text-terracota">{errors.code.message}</small>}
             </label>
 
             <label className="grid gap-1">
-              <span className="text-sm font-medium text-gris-piedra dark:text-neutral-300">C�digo de barras (opcional)</span>
+              <span className="text-sm font-medium text-gris-piedra dark:text-neutral-300">Código de barras (opcional)</span>
               <input
                 className="rounded border border-beige-arena dark:border-neutral-600 bg-white dark:bg-neutral-700 text-gris-piedra dark:text-neutral-100 p-2 focus:outline-none focus:ring-2 focus:ring-oliva"
                 {...register("barcode")}
                 placeholder="7501031311309"
               />
-              <small className="text-xs text-slate-500 dark:text-slate-400">�nico. Solo d�gitos de 8 a 14.</small>
+              <small className="text-xs text-slate-500 dark:text-slate-400">Único. Solo dígitos de 8 a 14.</small>
               {errors.barcode && <small className="text-terracota">{errors.barcode.message}</small>}
             </label>
 
@@ -184,7 +184,7 @@ export default function ProductoForm() {
 
           <div className="grid grid-cols-1 gap-4">
             <label className="grid gap-1">
-              <span className="text-sm font-medium text-gris-piedra dark:text-neutral-300">Stock M�nimo (opcional)</span>
+              <span className="text-sm font-medium text-gris-piedra dark:text-neutral-300">Stock Mínimo (opcional)</span>
               <input
                 type="number"
                 className="rounded border border-beige-arena dark:border-neutral-600 bg-white dark:bg-neutral-700 text-gris-piedra dark:text-neutral-100 p-2 focus:outline-none focus:ring-2 focus:ring-oliva"
