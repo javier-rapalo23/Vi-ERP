@@ -66,6 +66,9 @@ export default function POS() {
   const [paymentMethod, setPaymentMethod] = useState<"CASH" | "TRANSFER" | "CARD">("CASH");
   const [openShiftDialogOpen, setOpenShiftDialogOpen] = useState(false);
   const [closeShiftDialogOpen, setCloseShiftDialogOpen] = useState(false);
+  const [chargeModalOpen, setChargeModalOpen] = useState(false);
+  const chargeResolveRef = useRef<((value: boolean) => void) | null>(null);
+  const chargeModalOpenRef = useRef(false);
   const customerRef = useRef<HTMLDivElement>(null);
   const barcodeInputRef = useRef<HTMLInputElement>(null);
   const productSearchInputRef = useRef<HTMLInputElement>(null);
@@ -142,7 +145,7 @@ export default function POS() {
 
       if (e.ctrlKey && e.key === "Enter") {
         e.preventDefault();
-        if (items.length > 0 && selectedCustomerId) {
+        if (items.length > 0 && selectedCustomerId && !chargeModalOpenRef.current) {
           void cobrar();
         }
         return;
@@ -158,6 +161,10 @@ export default function POS() {
       }
 
       if (e.key === "Escape") {
+        if (chargeModalOpenRef.current) {
+          handleConfirmModal(false);
+          return;
+        }
         setCustomerDropdownOpen(false);
         if (!typingTarget) {
           setQuery("");
@@ -297,22 +304,19 @@ export default function POS() {
     return error?.response?.data?.error ?? "No se pudo registrar la venta. Intenta nuevamente.";
   }
 
-  function confirmCharge() {
-    const productsCount = items.reduce((acc, current) => acc + current.cantidad, 0);
-    const customerName = selectedCustomer?.name || "Cliente no seleccionado";
+  function confirmCharge(): Promise<boolean> {
+    return new Promise((resolve) => {
+      chargeResolveRef.current = resolve;
+      chargeModalOpenRef.current = true;
+      setChargeModalOpen(true);
+    });
+  }
 
-    return window.confirm(
-      [
-        "Confirmar cobro",
-        "",
-        `Cliente: ${customerName}`,
-        `Productos: ${productsCount}`,
-        `Total: ${formatMoney(grandTotal)}`,
-        `Pago: ${paymentMethodLabel(paymentMethod)}`,
-        "",
-        "Deseas continuar con el cobro?",
-      ].join("\n")
-    );
+  function handleConfirmModal(confirmed: boolean) {
+    chargeModalOpenRef.current = false;
+    setChargeModalOpen(false);
+    chargeResolveRef.current?.(confirmed);
+    chargeResolveRef.current = null;
   }
 
   function getInCartQty(productId: number) {
@@ -507,7 +511,7 @@ export default function POS() {
       return;
     }
 
-    if (!confirmCharge()) {
+    if (!await confirmCharge()) {
       toast.message("Cobro cancelado", {
         description: "La venta no fue procesada.",
       });
@@ -942,6 +946,61 @@ export default function POS() {
         </aside>
       </div>
       
+      {chargeModalOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="charge-modal-title"
+        >
+          <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 w-full max-w-sm mx-4 overflow-hidden">
+            <div className="bg-vixo-500 px-6 py-4">
+              <div className="flex items-center gap-3">
+                <CreditCard className="w-6 h-6 text-white" />
+                <h2 id="charge-modal-title" className="text-lg font-semibold text-white">Confirmar cobro</h2>
+              </div>
+            </div>
+            <div className="px-6 py-4 space-y-1">
+              <div className="flex justify-between items-center py-2.5 border-b border-slate-100 dark:border-slate-800">
+                <span className="text-sm text-slate-500 dark:text-slate-400">Cliente</span>
+                <span className="text-sm font-medium text-slate-900 dark:text-slate-50 text-right">{selectedCustomer?.name || "Cliente no seleccionado"}</span>
+              </div>
+              <div className="flex justify-between items-center py-2.5 border-b border-slate-100 dark:border-slate-800">
+                <span className="text-sm text-slate-500 dark:text-slate-400">Productos</span>
+                <span className="text-sm font-medium text-slate-900 dark:text-slate-50">{items.reduce((acc, item) => acc + item.cantidad, 0)}</span>
+              </div>
+              <div className="flex justify-between items-center py-2.5 border-b border-slate-100 dark:border-slate-800">
+                <span className="text-sm text-slate-500 dark:text-slate-400">Total</span>
+                <span className="text-xl font-bold text-slate-900 dark:text-slate-50">{formatMoney(grandTotal)}</span>
+              </div>
+              <div className="flex justify-between items-center py-2.5">
+                <span className="text-sm text-slate-500 dark:text-slate-400">Metodo de pago</span>
+                <span className="text-sm font-medium text-slate-900 dark:text-slate-50">{paymentMethodLabel(paymentMethod)}</span>
+              </div>
+            </div>
+            <p className="px-6 pb-3 text-sm text-slate-600 dark:text-slate-400">Deseas continuar con el cobro?</p>
+            <div className="px-6 pb-6 flex gap-3">
+              <button
+                type="button"
+                onClick={() => handleConfirmModal(false)}
+                className="flex-1 rounded-lg border border-slate-300 dark:border-slate-700 px-4 py-2.5 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 font-medium transition-colors"
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                autoFocus
+                onClick={() => handleConfirmModal(true)}
+                className="flex-1 rounded-lg bg-vixo-500 hover:bg-vixo-600 active:bg-vixo-700 px-4 py-2.5 text-white font-medium shadow-sm transition-colors flex items-center justify-center gap-2"
+              >
+                <CreditCard className="w-4 h-4" />
+                Confirmar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
         <OpenShiftDialog
           isOpen={openShiftDialogOpen}
           onOpenChange={setOpenShiftDialogOpen}
