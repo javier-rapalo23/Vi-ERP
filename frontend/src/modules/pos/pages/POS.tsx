@@ -67,11 +67,30 @@ export default function POS() {
   const [openShiftDialogOpen, setOpenShiftDialogOpen] = useState(false);
   const [closeShiftDialogOpen, setCloseShiftDialogOpen] = useState(false);
   const customerRef = useRef<HTMLDivElement>(null);
+  const barcodeInputRef = useRef<HTMLInputElement>(null);
+  const productSearchInputRef = useRef<HTMLInputElement>(null);
+  const paymentSelectRef = useRef<HTMLSelectElement>(null);
+  const scannerBufferRef = useRef("");
+  const scannerLastKeyAtRef = useRef(0);
+  const scannerResetTimerRef = useRef<number | null>(null);
   const queryClient = useQueryClient();
   const registrar = useRegistrarVenta();
   const { data: settings = [] } = useSettings();
   const { data: clientes = [], isLoading: isLoadingClientes } = useClientes();
   const { data: currentShift, isLoading: isLoadingShift } = useCurrentShift();
+
+  function isTypingTarget(target: EventTarget | null) {
+    if (!(target instanceof HTMLElement)) return false;
+    const tag = target.tagName.toLowerCase();
+    return tag === "input" || tag === "textarea" || tag === "select" || target.isContentEditable;
+  }
+
+  function focusBarcodeInput(selectText = false) {
+    barcodeInputRef.current?.focus();
+    if (selectText) {
+      barcodeInputRef.current?.select();
+    }
+  }
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -82,6 +101,137 @@ export default function POS() {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  useEffect(() => {
+    function handleKeyboardShortcuts(e: KeyboardEvent) {
+      if (registrar.isPending) return;
+
+      const lowerKey = e.key.toLowerCase();
+      const typingTarget = isTypingTarget(e.target);
+
+      if (e.ctrlKey && lowerKey === "b") {
+        e.preventDefault();
+        focusBarcodeInput(true);
+        return;
+      }
+
+      if (e.ctrlKey && lowerKey === "f") {
+        e.preventDefault();
+        productSearchInputRef.current?.focus();
+        productSearchInputRef.current?.select();
+        return;
+      }
+
+      if (e.ctrlKey && lowerKey === "1") {
+        e.preventDefault();
+        setPaymentMethod("CASH");
+        return;
+      }
+
+      if (e.ctrlKey && lowerKey === "2") {
+        e.preventDefault();
+        setPaymentMethod("TRANSFER");
+        return;
+      }
+
+      if (e.ctrlKey && lowerKey === "3") {
+        e.preventDefault();
+        setPaymentMethod("CARD");
+        return;
+      }
+
+      if (e.ctrlKey && e.key === "Enter") {
+        e.preventDefault();
+        if (items.length > 0 && selectedCustomerId) {
+          void cobrar();
+        }
+        return;
+      }
+
+      if (e.ctrlKey && e.key === "Delete") {
+        e.preventDefault();
+        if (items.length > 0) {
+          setItems([]);
+          toast.success("Carrito limpiado");
+        }
+        return;
+      }
+
+      if (e.key === "Escape") {
+        setCustomerDropdownOpen(false);
+        if (!typingTarget) {
+          setQuery("");
+          setBarcodeQuery("");
+        }
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyboardShortcuts);
+    return () => window.removeEventListener("keydown", handleKeyboardShortcuts);
+  }, [items.length, selectedCustomerId, registrar.isPending]);
+
+  useEffect(() => {
+    const SCANNER_MAX_KEY_GAP_MS = 45;
+    const SCANNER_CLEAR_MS = 120;
+    const SCANNER_MIN_LENGTH = 4;
+
+    function clearScannerBuffer() {
+      scannerBufferRef.current = "";
+      if (scannerResetTimerRef.current) {
+        window.clearTimeout(scannerResetTimerRef.current);
+        scannerResetTimerRef.current = null;
+      }
+    }
+
+    function scheduleScannerBufferClear() {
+      if (scannerResetTimerRef.current) {
+        window.clearTimeout(scannerResetTimerRef.current);
+      }
+      scannerResetTimerRef.current = window.setTimeout(() => {
+        scannerBufferRef.current = "";
+        scannerResetTimerRef.current = null;
+      }, SCANNER_CLEAR_MS);
+    }
+
+    function handleScannerInput(e: KeyboardEvent) {
+      if (registrar.isPending) return;
+      if (e.ctrlKey || e.altKey || e.metaKey) return;
+
+      const typingTarget = isTypingTarget(e.target);
+      if (typingTarget) return;
+
+      const now = Date.now();
+      const lastGap = now - scannerLastKeyAtRef.current;
+
+      if (e.key === "Enter") {
+        const candidate = scannerBufferRef.current.trim();
+        if (candidate.length >= SCANNER_MIN_LENGTH) {
+          e.preventDefault();
+          addByBarcode(candidate);
+        }
+        clearScannerBuffer();
+        return;
+      }
+
+      if (e.key.length !== 1) return;
+
+      if (lastGap > SCANNER_MAX_KEY_GAP_MS) {
+        scannerBufferRef.current = "";
+      }
+
+      scannerBufferRef.current += e.key;
+      scannerLastKeyAtRef.current = now;
+      scheduleScannerBufferClear();
+    }
+
+    window.addEventListener("keydown", handleScannerInput);
+    return () => {
+      window.removeEventListener("keydown", handleScannerInput);
+      if (scannerResetTimerRef.current) {
+        window.clearTimeout(scannerResetTimerRef.current);
+      }
+    };
+  }, [registrar.isPending]);
 
   // Cargar productos reales desde la API
   const { data: productos = [], isLoading, isError, refetch: refetchProductos } = useQuery<Item[], Error>({
@@ -121,6 +271,50 @@ export default function POS() {
   const currencyName = settingsMap.MONEDA_NOMBRE?.trim() || "Dolar";
   const selectedCustomer = clientes.find((cliente) => cliente.id === selectedCustomerId) ?? null;
 
+  function formatMoney(value: number) {
+    return `${currencySymbol}${value.toFixed(2)}`;
+  }
+
+  function resolveSaleErrorMessage(error: any) {
+    const apiError = String(error?.response?.data?.error || "").toLowerCase();
+
+    if (apiError.includes("stock") || apiError.includes("insuficiente")) {
+      return "No se pudo completar el cobro por falta de stock. Revisa cantidades y vuelve a intentar.";
+    }
+
+    if (apiError.includes("cliente")) {
+      return "No se pudo completar el cobro porque el cliente no es valido. Selecciona un cliente e intenta de nuevo.";
+    }
+
+    if (apiError.includes("turno") || apiError.includes("caja")) {
+      return "No hay una caja activa para cobrar. Abre turno e intenta nuevamente.";
+    }
+
+    if (error?.code === "ECONNABORTED" || !error?.response) {
+      return "No hay conexion con el servidor. Verifica internet/red local e intenta nuevamente.";
+    }
+
+    return error?.response?.data?.error ?? "No se pudo registrar la venta. Intenta nuevamente.";
+  }
+
+  function confirmCharge() {
+    const productsCount = items.reduce((acc, current) => acc + current.cantidad, 0);
+    const customerName = selectedCustomer?.name || "Cliente no seleccionado";
+
+    return window.confirm(
+      [
+        "Confirmar cobro",
+        "",
+        `Cliente: ${customerName}`,
+        `Productos: ${productsCount}`,
+        `Total: ${formatMoney(grandTotal)}`,
+        `Pago: ${paymentMethodLabel(paymentMethod)}`,
+        "",
+        "Deseas continuar con el cobro?",
+      ].join("\n")
+    );
+  }
+
   function getInCartQty(productId: number) {
     return items.find((item) => item.id === productId)?.cantidad ?? 0;
   }
@@ -132,7 +326,7 @@ export default function POS() {
 
   function addProduct(p: Item) {
     if (getAvailableStock(p) <= 0) {
-      toast.error(`Sin stock disponible para ${p.name}`);
+      toast.error(`Sin stock para ${p.name}. Ajusta cantidades o actualiza inventario.`);
       return;
     }
 
@@ -145,11 +339,12 @@ export default function POS() {
     });
   }
 
-  function addByBarcode() {
-    const normalizedCode = barcodeQuery.trim().toLowerCase();
+  function addByBarcode(scannedCode?: string) {
+    const normalizedCode = (scannedCode ?? barcodeQuery).trim().toLowerCase();
 
     if (!normalizedCode) {
       toast.error("Ingresa o escanea un código de barras");
+      focusBarcodeInput(true);
       return;
     }
 
@@ -161,11 +356,13 @@ export default function POS() {
 
     if (!found) {
       toast.error("No se encontró un producto con ese código");
+      focusBarcodeInput(true);
       return;
     }
 
     addProduct(found);
     setBarcodeQuery("");
+    focusBarcodeInput();
   }
 
   function updateQty(index: number, qty: number) {
@@ -176,7 +373,7 @@ export default function POS() {
     const safeQty = Math.min(qty, maxQty);
 
     if (qty > maxQty) {
-      toast.error(`Stock maximo para ${item.name}: ${maxQty}`);
+      toast.error(`Stock disponible para ${item.name}: ${maxQty}. Se ajusto la cantidad automaticamente.`);
     }
 
     setItems((s) => s.map((it, i) => (i === index ? { ...it, cantidad: safeQty } : it)));
@@ -310,6 +507,13 @@ export default function POS() {
       return;
     }
 
+    if (!confirmCharge()) {
+      toast.message("Cobro cancelado", {
+        description: "La venta no fue procesada.",
+      });
+      return;
+    }
+
     try {
       const cartSnapshot = [...items];
 
@@ -324,14 +528,14 @@ export default function POS() {
         const latestStock = latestStockByProduct.get(cartItem.id);
 
         if (latestStock === undefined) {
-          toast.error(`El producto ${cartItem.name} ya no esta disponible.`);
+          toast.error(`El producto ${cartItem.name} ya no esta disponible. Actualiza la lista e intenta nuevamente.`);
           await queryClient.invalidateQueries({ queryKey: ["productos"] });
           return;
         }
 
         if (cartItem.cantidad > latestStock) {
           toast.error(
-            `Stock insuficiente para ${cartItem.name}. Disponible: ${latestStock}, solicitado: ${cartItem.cantidad}.`
+            `Stock insuficiente para ${cartItem.name}. Disponible: ${latestStock}, solicitado: ${cartItem.cantidad}. Ajusta el carrito antes de cobrar.`
           );
           await queryClient.invalidateQueries({ queryKey: ["productos"] });
           return;
@@ -389,9 +593,10 @@ export default function POS() {
       setLastInvoice(invoice);
       toast.success("Venta registrada exitosamente");
       setItems([]);
+      focusBarcodeInput(true);
       await queryClient.invalidateQueries({ queryKey: ["productos"] });
     } catch (error: any) {
-      toast.error(error?.response?.data?.error ?? "Error al registrar venta");
+      toast.error(resolveSaleErrorMessage(error));
     }
   }
 
@@ -411,7 +616,9 @@ export default function POS() {
     <div className="max-w-6xl mx-auto space-y-6">
       <div>
         <h1 className="text-2xl sm:text-3xl font-semibold text-slate-900 dark:text-slate-50">Punto de Venta</h1>
-
+        <p className="mt-2 text-xs sm:text-sm text-slate-600 dark:text-slate-400">
+          Atajos: Ctrl+B codigo barras, Ctrl+F buscar producto, Ctrl+1/2/3 metodo pago, Ctrl+Enter cobrar, Ctrl+Delete limpiar carrito.
+        </p>
       </div>
         <ShiftStatusCard
           shift={currentShift}
@@ -426,6 +633,8 @@ export default function POS() {
           <p className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-3">Ingresar producto</p>
           <div className="mt-3 flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
             <input
+              ref={barcodeInputRef}
+              autoFocus
               value={barcodeQuery}
               onChange={(e) => setBarcodeQuery(e.target.value)}
               onKeyDown={(e) => {
@@ -435,12 +644,16 @@ export default function POS() {
                 }
               }}
               placeholder="Escanear o ingresar código de barras"
+              autoComplete="off"
+              autoCapitalize="none"
+              autoCorrect="off"
+              spellCheck={false}
               className="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-50 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-vixo-500 focus:border-vixo-500 transition-colors"
               aria-label="Código de barras"
             />
             <button
               type="button"
-              onClick={addByBarcode}
+              onClick={() => addByBarcode()}
               className="rounded-lg bg-vixo-500 hover:bg-vixo-600 px-3 py-2 text-white font-medium transition-colors"
             >
               Agregar
@@ -553,6 +766,7 @@ export default function POS() {
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-slate-500" />
               <input
+                ref={productSearchInputRef}
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Buscar producto..."
@@ -688,6 +902,7 @@ export default function POS() {
             <div>
               <p className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-1">Metodo de pago</p>
               <select
+                ref={paymentSelectRef}
                 value={paymentMethod}
                 onChange={(e) => setPaymentMethod(e.target.value as "CASH" | "TRANSFER" | "CARD")}
                 className="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-50 px-3 py-2 text-sm"

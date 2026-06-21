@@ -13,7 +13,7 @@ import {
 import type { DashboardData } from "../services/dashboard.api";
 import { AlertTriangle, TrendingUp, Package, Users, DollarSign } from "lucide-react";
 
-export function AdminDashboard({ data }: { data: DashboardData }) {
+export function AdminDashboard({ data, currencySymbol }: { data: DashboardData; currencySymbol: string }) {
   const metrics = data.metrics;
 
   return (
@@ -25,7 +25,7 @@ export function AdminDashboard({ data }: { data: DashboardData }) {
             <div>
               <p className="text-sm text-gray-600">Ventas Totales</p>
               <p className="text-2xl font-bold text-gray-900">
-                ${metrics.salesTotal.toLocaleString("es-AR", {
+                {currencySymbol}{metrics.salesTotal.toLocaleString("es-AR", {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
                 })}
@@ -41,7 +41,7 @@ export function AdminDashboard({ data }: { data: DashboardData }) {
             <div>
               <p className="text-sm text-gray-600">Ticket Promedio</p>
               <p className="text-2xl font-bold text-gray-900">
-                ${metrics.averageTicket.toLocaleString("es-AR", {
+                {currencySymbol}{metrics.averageTicket.toLocaleString("es-AR", {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
                 })}
@@ -115,7 +115,7 @@ export function AdminDashboard({ data }: { data: DashboardData }) {
             <YAxis />
             <Tooltip />
             <Legend />
-            <Line type="monotone" dataKey="sales" stroke="#10b981" name="Ventas ($)" />
+            <Line type="monotone" dataKey="sales" stroke="#10b981" name={`Ventas (${currencySymbol})`} />
           </LineChart>
         </ResponsiveContainer>
       </div>
@@ -128,7 +128,7 @@ export function AdminDashboard({ data }: { data: DashboardData }) {
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="code" />
             <YAxis yAxisId="left" label={{ value: "Cantidad", angle: -90, position: "insideLeft" }} />
-            <YAxis yAxisId="right" orientation="right" label={{ value: "Ventas ($)", angle: 90, position: "insideRight" }} />
+            <YAxis yAxisId="right" orientation="right" label={{ value: `Ventas (${currencySymbol})`, angle: 90, position: "insideRight" }} />
             <Tooltip />
             <Legend />
             <Bar yAxisId="left" dataKey="quantity" fill="#3b82f6" name="Cantidad" />
@@ -136,7 +136,7 @@ export function AdminDashboard({ data }: { data: DashboardData }) {
               yAxisId="right"
               dataKey="revenue"
               fill="#10b981"
-              name="Ventas ($)"
+              name={`Ventas (${currencySymbol})`}
             />
           </BarChart>
         </ResponsiveContainer>
@@ -147,7 +147,7 @@ export function AdminDashboard({ data }: { data: DashboardData }) {
         <div className="bg-white p-6 rounded-lg border border-gray-200">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Cuentas por Cobrar</h3>
           <p className="text-3xl font-bold text-orange-600">
-            ${metrics.accountsReceivableBalance.toLocaleString("es-AR", {
+            {currencySymbol}{metrics.accountsReceivableBalance.toLocaleString("es-AR", {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
             })}
@@ -158,7 +158,7 @@ export function AdminDashboard({ data }: { data: DashboardData }) {
         <div className="bg-white p-6 rounded-lg border border-gray-200">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Cuentas por Pagar</h3>
           <p className="text-3xl font-bold text-red-600">
-            ${metrics.accountsPayableBalance.toLocaleString("es-AR", {
+            {currencySymbol}{metrics.accountsPayableBalance.toLocaleString("es-AR", {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
             })}

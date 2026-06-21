@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useCreatePurchase } from "../services/purchases.api";
 import { useSuppliers } from "../services/suppliers.api";
 import { useProductos } from "@/modules/inventario/services/productos.api";
+import { useSettings } from "@/modules/mantenimientos/services/configuration.api";
 import { useAnalyzeProductImage } from "@/shared/services/ai.api";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
@@ -36,7 +37,10 @@ export default function PurchaseForm() {
 
   const { data: suppliers = [], isLoading: isLoadingSuppliers } = useSuppliers();
   const { data: products = [], isLoading: isLoadingProducts } = useProductos();
+  const { data: settings } = useSettings();
   const createMutation = useCreatePurchase();
+
+  const currencySymbol = settings?.find((s) => s.key === "MONEDA_SIMBOLO")?.value ?? "$";
   const analyzeImageMutation = useAnalyzeProductImage();
 
   const {
@@ -347,8 +351,7 @@ export default function PurchaseForm() {
                         {detail.productName}
                       </div>
                       <div className="text-sm text-slate-600 dark:text-slate-300">
-                        {detail.quantity} x ${detail.unitPrice.toFixed(2)} = $
-                        {(detail.quantity * detail.unitPrice).toFixed(2)}
+                        {detail.quantity} x {currencySymbol}{detail.unitPrice.toFixed(2)} = {currencySymbol}{(detail.quantity * detail.unitPrice).toFixed(2)}
                       </div>
                     </div>
                     <button
@@ -365,7 +368,7 @@ export default function PurchaseForm() {
               <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">
                 <div className="flex justify-between items-center text-lg font-bold text-slate-900 dark:text-slate-50">
                   <span>Total:</span>
-                  <span className="text-vixo-600 dark:text-vixo-400">${calculateTotal().toFixed(2)}</span>
+                  <span className="text-vixo-600 dark:text-vixo-400">{currencySymbol}{calculateTotal().toFixed(2)}</span>
                 </div>
               </div>
             </div>

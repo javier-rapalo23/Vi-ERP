@@ -1,12 +1,14 @@
-import { useClientes, useDesactivarCliente } from "../services/clientes.api";
+import { useClientesPaginados, useDesactivarCliente, CLIENTES_PAGE_LIMIT } from "../services/clientes.api";
 import { Link } from "react-router-dom";
 import Loading from "@/shared/components/Loading";
 import BackButton from "@/shared/components/BackButton";
 import { toast } from "sonner";
-import { UserPlus, Pencil, UserX, Phone, Mail, MapPin } from "lucide-react";
+import { UserPlus, Pencil, UserX, Phone, Mail, MapPin, ChevronLeft, ChevronRight } from "lucide-react";
+import { useState } from "react";
 
 export default function ClientesList() {
-  const { data, isLoading, error } = useClientes();
+  const [page, setPage] = useState(1);
+  const { data, isLoading, error } = useClientesPaginados({ page });
   const desactivarMutation = useDesactivarCliente();
 
   const handleDeactivate = async (id: number, name: string) => {
@@ -21,6 +23,9 @@ export default function ClientesList() {
 
   if (isLoading) return <Loading />;
   if (error) return <p className="text-red-600 dark:text-red-400">Ocurrió un error al cargar los clientes.</p>;
+
+  const clientes = data?.data ?? [];
+  const pagination = data?.pagination;
 
   return (
     <div className="space-y-4">
@@ -39,8 +44,8 @@ export default function ClientesList() {
 
       {/* Mobile: cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:hidden">
-        {data && data.length > 0 ? (
-          data.map((cliente) => (
+        {clientes.length > 0 ? (
+          clientes.map((cliente) => (
             <div
               key={cliente.id}
               className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-4 shadow-sm"
@@ -120,8 +125,8 @@ export default function ClientesList() {
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-200 dark:divide-slate-800">
-            {data && data.length > 0 ? (
-              data.map((cliente) => (
+            {clientes.length > 0 ? (
+              clientes.map((cliente) => (
                 <tr key={cliente.id} className="bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
                   <td className="px-4 py-3 font-medium text-slate-900 dark:text-slate-50">{cliente.name}</td>
                   <td className="px-4 py-3 text-slate-600 dark:text-slate-400">{cliente.phone || "—"}</td>
@@ -169,6 +174,33 @@ export default function ClientesList() {
             )}
           </tbody>
         </table>
+
+        {pagination && pagination.totalPages > 1 && (
+          <div className="flex items-center justify-between px-4 py-3 border-t border-slate-200 dark:border-slate-800">
+            <span className="text-xs text-slate-500 dark:text-slate-400">
+              Mostrando {((page - 1) * CLIENTES_PAGE_LIMIT) + 1}–{Math.min(page * CLIENTES_PAGE_LIMIT, pagination.total)} de {pagination.total} clientes
+            </span>
+            <div className="flex items-center gap-1">
+              <button
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                disabled={page <= 1}
+                className="rounded-md p-1.5 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+              <span className="px-2 text-xs text-slate-700 dark:text-slate-300 font-medium">
+                {page} / {pagination.totalPages}
+              </span>
+              <button
+                onClick={() => setPage((p) => Math.min(pagination.totalPages, p + 1))}
+                disabled={page >= pagination.totalPages}
+                className="rounded-md p-1.5 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

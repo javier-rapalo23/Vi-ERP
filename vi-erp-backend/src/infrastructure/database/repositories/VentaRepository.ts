@@ -1,7 +1,7 @@
 import { prisma } from "../client";
 import { ISaleRepository, SalesHistoryFilters } from "../../../core/repositories/IVentaRepository";
 import { Sale } from "../../../core/entities/Venta";
-import { Prisma } from "@prisma/client";
+import { Prisma, SaleStatus } from "@prisma/client";
 
 const INVOICE_METADATA_KEYS = [
   "EMPRESA_NOMBRE",
@@ -357,7 +357,7 @@ export class SaleRepository implements ISaleRepository {
     }
 
     if (filters?.status) {
-      where.status = filters.status as any;
+      where.status = filters.status as SaleStatus;
     }
 
     if (filters?.minAmount !== undefined || filters?.maxAmount !== undefined) {
@@ -366,31 +366,57 @@ export class SaleRepository implements ISaleRepository {
       if (filters.maxAmount !== undefined) where.total.lte = filters.maxAmount;
     }
 
-    return prisma.sale.findMany({
-      where,
-      orderBy: { date: "desc" },
-      include: {
-        customer: {
-          select: {
-            id: true,
-            name: true,
-            phone: true,
-            email: true,
+    const page = Math.max(1, filters?.page ?? 1);
+    const limit = Math.min(100, Math.max(1, filters?.limit ?? 20));
+    const skip = (page - 1) * limit;
+
+    const [total, amountResult, itemsResult, sales] = await Promise.all([
+      prisma.sale.count({ where }),
+      prisma.sale.aggregate({ where, _sum: { total: true } }),
+      prisma.saleDetail.aggregate({ where: { sale: where }, _sum: { quantity: true } }),
+      prisma.sale.findMany({
+        where,
+        orderBy: { date: "desc" },
+        skip,
+        take: limit,
+        include: {
+          customer: {
+            select: {
+              id: true,
+              name: true,
+              phone: true,
+              email: true,
+            },
           },
-        },
-        details: {
-          include: {
-            product: {
-              select: {
-                id: true,
-                name: true,
-                code: true,
+          details: {
+            include: {
+              product: {
+                select: {
+                  id: true,
+                  name: true,
+                  code: true,
+                },
               },
             },
           },
         },
+      }),
+    ]);
+
+    return {
+      data: sales,
+      summary: {
+        totalSales: total,
+        totalAmount: Number(amountResult._sum.total ?? 0),
+        totalItemsSold: Number(itemsResult._sum.quantity ?? 0),
       },
-    });
+      pagination: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
   }
 
   async getTotalsByPeriod() {

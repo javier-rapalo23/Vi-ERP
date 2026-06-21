@@ -1,11 +1,11 @@
 import BackButton from "@/shared/components/BackButton";
 import Loading from "@/shared/components/Loading";
 import { useSettings } from "@/modules/mantenimientos/services/configuration.api";
-import { getVentaFactura, useVentasHistorial, useSalesTotalsByPeriod } from "../services/ventas.api";
+import { getVentaFactura, useVentasHistorial, useSalesTotalsByPeriod, VENTAS_PAGE_LIMIT } from "../services/ventas.api";
 import { useShiftHistory } from "../services/shifts.api";
 import { useUsers } from "@/modules/mantenimientos/services/users.api";
 import { useAuthStore } from "@/shared/store/auth.store";
-import { ReceiptText, Package, DollarSign, TrendingUp, Calendar } from "lucide-react";
+import { ReceiptText, Package, DollarSign, TrendingUp, Calendar, ChevronLeft, ChevronRight } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -17,6 +17,7 @@ export default function HistorialVentas() {
   const [selectedUserId, setSelectedUserId] = useState<number | undefined>(undefined);
   const { data: users = [] } = useUsers();
   const { data: shiftHistory } = useShiftHistory(isAdmin ? selectedUserId : user?.id);
+  const [page, setPage] = useState(1);
   const [filters, setFilters] = useState({
     dateFrom: "",
     dateTo: "",
@@ -25,7 +26,13 @@ export default function HistorialVentas() {
     minAmount: "",
     maxAmount: "",
   });
-  const { data, isLoading, error } = useVentasHistorial(filters);
+
+  function updateFilter(key: string, value: string) {
+    setFilters((prev) => ({ ...prev, [key]: value }));
+    setPage(1);
+  }
+
+  const { data, isLoading, error } = useVentasHistorial({ ...filters, page });
   const [expandedSaleId, setExpandedSaleId] = useState<number | null>(null);
 
   const currencySymbol = settings.find((s) => s.key === "MONEDA_SIMBOLO")?.value?.trim() || "$";
@@ -146,7 +153,7 @@ export default function HistorialVentas() {
   }
 
   if (isLoading) return <Loading />;
-  if (error || !data) {
+  if (error || !data || !data.pagination) {
     return <p className="text-red-600 dark:text-red-400">Ocurrio un error al cargar el historial de ventas.</p>;
   }
 
@@ -287,7 +294,7 @@ export default function HistorialVentas() {
             <input
               type="date"
               value={filters.dateFrom}
-              onChange={(e) => setFilters((prev) => ({ ...prev, dateFrom: e.target.value }))}
+              onChange={(e) => updateFilter("dateFrom", e.target.value)}
               className="rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-50 px-3 py-2 text-sm"
             />
           </label>
@@ -297,7 +304,7 @@ export default function HistorialVentas() {
             <input
               type="date"
               value={filters.dateTo}
-              onChange={(e) => setFilters((prev) => ({ ...prev, dateTo: e.target.value }))}
+              onChange={(e) => updateFilter("dateTo", e.target.value)}
               className="rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-50 px-3 py-2 text-sm"
             />
           </label>
@@ -308,7 +315,7 @@ export default function HistorialVentas() {
               type="text"
               placeholder="Nombre del cliente"
               value={filters.customer}
-              onChange={(e) => setFilters((prev) => ({ ...prev, customer: e.target.value }))}
+              onChange={(e) => updateFilter("customer", e.target.value)}
               className="rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-50 px-3 py-2 text-sm"
             />
           </label>
@@ -317,7 +324,7 @@ export default function HistorialVentas() {
             <span className="text-xs text-slate-500 dark:text-slate-400">Estado</span>
             <select
               value={filters.status}
-              onChange={(e) => setFilters((prev) => ({ ...prev, status: e.target.value }))}
+              onChange={(e) => updateFilter("status", e.target.value)}
               className="rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-50 px-3 py-2 text-sm"
             >
               <option value="">Todos</option>
@@ -335,7 +342,7 @@ export default function HistorialVentas() {
               min={0}
               step="0.01"
               value={filters.minAmount}
-              onChange={(e) => setFilters((prev) => ({ ...prev, minAmount: e.target.value }))}
+              onChange={(e) => updateFilter("minAmount", e.target.value)}
               className="rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-50 px-3 py-2 text-sm"
             />
           </label>
@@ -347,7 +354,7 @@ export default function HistorialVentas() {
               min={0}
               step="0.01"
               value={filters.maxAmount}
-              onChange={(e) => setFilters((prev) => ({ ...prev, maxAmount: e.target.value }))}
+              onChange={(e) => updateFilter("maxAmount", e.target.value)}
               className="rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-50 px-3 py-2 text-sm"
             />
           </label>
@@ -356,16 +363,10 @@ export default function HistorialVentas() {
         <div>
           <button
             type="button"
-            onClick={() =>
-              setFilters({
-                dateFrom: "",
-                dateTo: "",
-                customer: "",
-                status: "",
-                minAmount: "",
-                maxAmount: "",
-              })
-            }
+            onClick={() => {
+              setFilters({ dateFrom: "", dateTo: "", customer: "", status: "", minAmount: "", maxAmount: "" });
+              setPage(1);
+            }}
             className="rounded-lg border border-slate-300 dark:border-slate-700 px-3 py-2 text-xs text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
           >
             Limpiar filtros
@@ -495,6 +496,33 @@ export default function HistorialVentas() {
             )}
           </tbody>
         </table>
+
+      {data.pagination.totalPages > 1 && (
+        <div className="flex items-center justify-between px-4 py-3 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+          <span className="text-xs text-slate-500 dark:text-slate-400">
+            Mostrando {((page - 1) * VENTAS_PAGE_LIMIT) + 1}–{Math.min(page * VENTAS_PAGE_LIMIT, data.pagination.total)} de {data.pagination.total} ventas
+          </span>
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page <= 1}
+              className="rounded-md p-1.5 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+            <span className="px-2 text-xs text-slate-700 dark:text-slate-300 font-medium">
+              {page} / {data.pagination.totalPages}
+            </span>
+            <button
+              onClick={() => setPage((p) => Math.min(data.pagination.totalPages, p + 1))}
+              disabled={page >= data.pagination.totalPages}
+              className="rounded-md p-1.5 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      )}
       </div>
     </div>
   );

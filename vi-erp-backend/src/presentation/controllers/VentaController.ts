@@ -1,9 +1,29 @@
 import { Request, Response } from "express";
 import { RegisterSaleUseCase } from "../../application/useCases/ventas/RegistrarVentaUseCase";
 import { SaleRepository } from "../../infrastructure/database/repositories/VentaRepository";
-import { createSaleSchema } from "../validators/ventaValidator";
+import { createSaleSchema, CreateSaleInput } from "../validators/ventaValidator";
 import logger from "../../config/logger";
 import { SaleStatus } from "@prisma/client";
+
+function getRequestUserContext(req: Request) {
+  return {
+    userId: Number(req.user?.id) || null,
+    userRole: req.user?.role ?? null,
+    ip: req.ip,
+  };
+}
+
+function getSalePayloadContext(payload: CreateSaleInput) {
+  const products = payload.products;
+  const totalItems = products.reduce((acc, p) => acc + p.quantity, 0);
+
+  return {
+    customerId: payload.customerId,
+    productsCount: products.length,
+    totalItems,
+    paymentMethod: payload.paymentMethod,
+  };
+}
 
 /**
  * @swagger
@@ -40,19 +60,44 @@ import { SaleStatus } from "@prisma/client";
  *         description: Server error
  */
 export const createSale = async (req: Request, res: Response) => {
+  const requestId = `sale-${Date.now()}-${Math.floor(Math.random() * 100000)}`;
+  const userContext = getRequestUserContext(req);
+
   try {
     // Validate input data
     const validatedData = createSaleSchema.parse(req.body);
+    const saleContext = getSalePayloadContext(validatedData);
+
+    logger.info("sale.create.started", {
+      event: "sale.create.started",
+      requestId,
+      ...userContext,
+      ...saleContext,
+    });
     
     const saleRepository = new SaleRepository();
     const useCase = new RegisterSaleUseCase(saleRepository);
     const result = await useCase.execute(validatedData);
-    
-    logger.info(`Sale registered successfully: ${result.id}`);
+
+    logger.info("sale.create.succeeded", {
+      event: "sale.create.succeeded",
+      requestId,
+      ...userContext,
+      saleId: result.id,
+      invoiceNumber: result.invoiceNumber,
+      total: result.total,
+      status: result.status,
+    });
+
     res.status(201).json({ message: "Sale registered", data: result });
   } catch (err: any) {
     if (err.name === "ZodError") {
-      logger.warn("Validation error in sale creation:", err.errors);
+      logger.warn("sale.create.validation_error", {
+        event: "sale.create.validation_error",
+        requestId,
+        ...userContext,
+        validationErrors: err.errors,
+      });
       return res.status(400).json({ 
         error: "Invalid data", 
         details: err.errors 
@@ -68,18 +113,31 @@ export const createSale = async (req: Request, res: Response) => {
       message.includes("fecha limite") ||
       message.includes("Correlativo fuera de rango")
     ) {
-      logger.warn("Business validation error in sale creation:", message);
+      logger.warn("sale.create.business_error", {
+        event: "sale.create.business_error",
+        requestId,
+        ...userContext,
+        reason: message,
+      });
       return res.status(400).json({ error: message });
     }
-    
-    logger.error("Error creating sale:", err);
+
+    logger.error("sale.create.failed", {
+      event: "sale.create.failed",
+      requestId,
+      ...userContext,
+      errorMessage: err?.message || "Internal server error",
+      errorName: err?.name || "UnknownError",
+      stack: err?.stack,
+    });
+
     res.status(500).json({ error: err.message || "Internal server error" });
   }
 };
 
 export const getSalesHistory = async (req: Request, res: Response) => {
   try {
-    const { dateFrom, dateTo, customer, status, minAmount, maxAmount } = req.query;
+    const { dateFrom, dateTo, customer, status, minAmount, maxAmount, page, limit } = req.query;
 
     const parsedDateFrom = typeof dateFrom === "string" && dateFrom.trim() !== "" ? new Date(dateFrom) : undefined;
     const parsedDateToRaw = typeof dateTo === "string" && dateTo.trim() !== "" ? new Date(dateTo) : undefined;
@@ -120,30 +178,29 @@ export const getSalesHistory = async (req: Request, res: Response) => {
       return res.status(400).json({ error: "status invalido" });
     }
 
+    const parsedPage = typeof page === "string" && page.trim() !== "" ? parseInt(page) : 1;
+    const parsedLimit = typeof limit === "string" && limit.trim() !== "" ? parseInt(limit) : 20;
+
+    if (!Number.isFinite(parsedPage) || parsedPage < 1) {
+      return res.status(400).json({ error: "page invalido" });
+    }
+    if (!Number.isFinite(parsedLimit) || parsedLimit < 1) {
+      return res.status(400).json({ error: "limit invalido" });
+    }
+
     const saleRepository = new SaleRepository();
-    const sales = await saleRepository.findAll({
+    const result = await saleRepository.findAll({
       dateFrom: parsedDateFrom,
       dateTo: parsedDateTo,
       customer: typeof customer === "string" && customer.trim() !== "" ? customer.trim() : undefined,
       status: parsedStatus,
       minAmount: parsedMin,
       maxAmount: parsedMax,
+      page: parsedPage,
+      limit: parsedLimit,
     });
 
-    const totalSalesAmount = sales.reduce((acc, sale) => acc + Number(sale.total || 0), 0);
-    const totalItemsSold = sales.reduce(
-      (acc, sale) => acc + sale.details.reduce((lineAcc: number, detail: any) => lineAcc + Number(detail.quantity || 0), 0),
-      0
-    );
-
-    res.json({
-      data: sales,
-      summary: {
-        totalSales: sales.length,
-        totalAmount: totalSalesAmount,
-        totalItemsSold,
-      },
-    });
+    res.json(result);
   } catch (err: any) {
     logger.error("Error fetching sales history:", err);
     res.status(500).json({ error: err.message || "Internal server error" });

@@ -33,6 +33,7 @@ const SuppliersList = lazy(() => import("@/modules/compras/pages/SuppliersList")
 const SupplierForm = lazy(() => import("@/modules/compras/pages/SupplierForm"));
 const PurchasesList = lazy(() => import("@/modules/compras/pages/PurchasesList"));
 const PurchaseForm = lazy(() => import("@/modules/compras/pages/PurchaseForm"));
+const PurchaseDetail = lazy(() => import("@/modules/compras/pages/PurchaseDetail"));
 
 export const router = createBrowserRouter([
   {
@@ -304,6 +305,14 @@ export const router = createBrowserRouter([
             element: (
               <Protected roles={["admin"]}>
                 <PurchasesList />
+              </Protected>
+            ),
+          },
+          {
+            path: ":id",
+            element: (
+              <Protected roles={["admin"]}>
+                <PurchaseDetail />
               </Protected>
             ),
           },

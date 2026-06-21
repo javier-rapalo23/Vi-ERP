@@ -8,7 +8,7 @@ export function authMiddleware(req: Request, res: Response, next: NextFunction) 
 
   try {
     const decoded = verificarToken(token);
-    (req as any).user = decoded;
+    req.user = decoded;
     next();
   } catch (error: any) {
     // Diferenciar entre token expirado e inválido

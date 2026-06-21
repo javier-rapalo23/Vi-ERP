@@ -6,10 +6,27 @@ import { logCriticalAction } from "../../infrastructure/services/audit.service";
 export const getCustomers = async (req: Request, res: Response) => {
   try {
     const includeInactive = req.query.includeInactive === "true";
-    const customers = await prisma.customer.findMany({
-      where: includeInactive ? undefined : { isActive: true },
-      orderBy: { name: "asc" },
-    });
+    const where = includeInactive ? undefined : { isActive: true };
+
+    const pageStr = req.query.page as string | undefined;
+    const limitStr = req.query.limit as string | undefined;
+
+    if (pageStr !== undefined || limitStr !== undefined) {
+      const page = Math.max(1, parseInt(pageStr ?? "1") || 1);
+      const limit = Math.min(100, Math.max(1, parseInt(limitStr ?? "20") || 20));
+
+      const [total, customers] = await Promise.all([
+        prisma.customer.count({ where }),
+        prisma.customer.findMany({ where, orderBy: { name: "asc" }, skip: (page - 1) * limit, take: limit }),
+      ]);
+
+      return res.json({
+        data: customers,
+        pagination: { total, page, limit, totalPages: Math.ceil(total / limit) },
+      });
+    }
+
+    const customers = await prisma.customer.findMany({ where, orderBy: { name: "asc" } });
     res.json(customers);
   } catch (err: any) {
     logger.error("Error fetching customers:", err);

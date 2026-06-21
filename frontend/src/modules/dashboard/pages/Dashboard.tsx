@@ -1,5 +1,6 @@
 import { useAuthStore } from "@/shared/store/auth.store";
 import { useDashboardSummary } from "../services/dashboard.api";
+import { useSettings } from "@/modules/mantenimientos/services/configuration.api";
 import { AdminDashboard } from "../components/AdminDashboard";
 import { CajeroDashboard } from "../components/CajeroDashboard";
 import { ContadorDashboard } from "../components/ContadorDashboard";
@@ -9,6 +10,10 @@ import Loading from "@/shared/components/Loading";
 export default function Dashboard() {
   const { user, role } = useAuthStore();
   const { data, isLoading, error } = useDashboardSummary();
+  const { data: settings } = useSettings();
+
+  const currencySymbol =
+    settings?.find((s) => s.key === "MONEDA_SIMBOLO")?.value ?? "$";
 
   if (isLoading) {
     return <Loading />;
@@ -44,11 +49,11 @@ export default function Dashboard() {
       </div>
 
       {/* Role-based dashboard content */}
-      {role === "admin" && <AdminDashboard data={data} />}
-      {role === "cajero" && <CajeroDashboard data={data} />}
-      {role === "contador" && <ContadorDashboard data={data} />}
+      {role === "admin" && <AdminDashboard data={data} currencySymbol={currencySymbol} />}
+      {role === "cajero" && <CajeroDashboard data={data} currencySymbol={currencySymbol} />}
+      {role === "contador" && <ContadorDashboard data={data} currencySymbol={currencySymbol} />}
       {role !== "admin" && role !== "cajero" && role !== "contador" && (
-        <UserDashboard data={data} />
+        <UserDashboard data={data} currencySymbol={currencySymbol} />
       )}
     </div>
   );

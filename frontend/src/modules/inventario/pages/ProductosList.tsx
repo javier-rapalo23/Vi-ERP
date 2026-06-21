@@ -1,12 +1,14 @@
-import { useProductos, useDesactivarProducto } from "../services/productos.api";
+import { useProductosPaginados, useDesactivarProducto, PRODUCTOS_PAGE_LIMIT } from "../services/productos.api";
 import { Link } from "react-router-dom";
 import Loading from "@/shared/components/Loading";
 import { useSettings } from "@/modules/mantenimientos/services/configuration.api";
 import { toast } from "sonner";
-import { PackagePlus } from "lucide-react";
+import { PackagePlus, ChevronLeft, ChevronRight } from "lucide-react";
+import { useState } from "react";
 
 export default function ProductosList() {
-  const { data, isLoading, error } = useProductos();
+  const [page, setPage] = useState(1);
+  const { data, isLoading, error } = useProductosPaginados({ page });
   const desactivarMutation = useDesactivarProducto();
   const { data: settings = [] } = useSettings();
 
@@ -25,6 +27,9 @@ export default function ProductosList() {
 
   if (isLoading) return <Loading />;
   if (error) return <p className="text-red-600 dark:text-red-400">Ocurrió un error al cargar los productos.</p>;
+
+  const productos = data?.data ?? [];
+  const pagination = data?.pagination;
 
   return (
     <div className="space-y-4">
@@ -50,8 +55,8 @@ export default function ProductosList() {
             </tr>
           </thead>
           <tbody>
-            {data && data.length > 0 ? (
-              data.map((p) => (
+            {productos.length > 0 ? (
+              productos.map((p) => (
                 <tr key={p.id} className="border-t border-slate-200 dark:border-slate-800 hover:bg-vixo-50 dark:hover:bg-slate-800 transition-colors">
                   <td className="px-4 py-3 text-slate-900 dark:text-slate-50 font-medium">{p.code || 'N/A'}</td>
                   <td className="px-4 py-3 text-slate-700 dark:text-slate-300">{p.barcode || 'N/A'}</td>
@@ -88,6 +93,33 @@ export default function ProductosList() {
             )}
           </tbody>
         </table>
+
+        {pagination && pagination.totalPages > 1 && (
+          <div className="flex items-center justify-between px-4 py-3 border-t border-slate-200 dark:border-slate-800">
+            <span className="text-xs text-slate-500 dark:text-slate-400">
+              Mostrando {((page - 1) * PRODUCTOS_PAGE_LIMIT) + 1}–{Math.min(page * PRODUCTOS_PAGE_LIMIT, pagination.total)} de {pagination.total} productos
+            </span>
+            <div className="flex items-center gap-1">
+              <button
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                disabled={page <= 1}
+                className="rounded-md p-1.5 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+              <span className="px-2 text-xs text-slate-700 dark:text-slate-300 font-medium">
+                {page} / {pagination.totalPages}
+              </span>
+              <button
+                onClick={() => setPage((p) => Math.min(pagination.totalPages, p + 1))}
+                disabled={page >= pagination.totalPages}
+                className="rounded-md p-1.5 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

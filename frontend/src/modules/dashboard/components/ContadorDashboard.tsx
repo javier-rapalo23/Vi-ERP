@@ -2,7 +2,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsi
 import type { DashboardData } from "../services/dashboard.api";
 import { AlertTriangle, Wallet, TrendingDown, DollarSign } from "lucide-react";
 
-export function ContadorDashboard({ data }: { data: DashboardData }) {
+export function ContadorDashboard({ data, currencySymbol }: { data: DashboardData; currencySymbol: string }) {
   const metrics = data.metrics;
 
   // Calcular márgenes y flujo
@@ -19,7 +19,7 @@ export function ContadorDashboard({ data }: { data: DashboardData }) {
             <div>
               <p className="text-sm text-gray-600">Ventas Totales</p>
               <p className="text-2xl font-bold text-gray-900">
-                ${totalSalesValue.toLocaleString("es-AR", {
+                {currencySymbol}{totalSalesValue.toLocaleString("es-AR", {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
                 })}
@@ -35,7 +35,7 @@ export function ContadorDashboard({ data }: { data: DashboardData }) {
             <div>
               <p className="text-sm text-gray-600">Margen Neto Estimado</p>
               <p className="text-2xl font-bold text-gray-900">
-                ${netMargin.toLocaleString("es-AR", {
+                {currencySymbol}{netMargin.toLocaleString("es-AR", {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
                 })}
@@ -51,7 +51,7 @@ export function ContadorDashboard({ data }: { data: DashboardData }) {
             <div>
               <p className="text-sm text-gray-600">Flujo de Caja</p>
               <p className="text-2xl font-bold text-gray-900">
-                ${cashFlow.toLocaleString("es-AR", {
+                {currencySymbol}{cashFlow.toLocaleString("es-AR", {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
                 })}
@@ -79,7 +79,7 @@ export function ContadorDashboard({ data }: { data: DashboardData }) {
         <div className="bg-orange-50 border border-orange-200 p-6 rounded-lg">
           <h3 className="text-lg font-semibold text-orange-900 mb-2">Cuentas por Cobrar (CxC)</h3>
           <p className="text-3xl font-bold text-orange-600 mb-2">
-            ${metrics.accountsReceivableBalance.toLocaleString("es-AR", {
+            {currencySymbol}{metrics.accountsReceivableBalance.toLocaleString("es-AR", {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
             })}
@@ -98,7 +98,7 @@ export function ContadorDashboard({ data }: { data: DashboardData }) {
         <div className="bg-red-50 border border-red-200 p-6 rounded-lg">
           <h3 className="text-lg font-semibold text-red-900 mb-2">Cuentas por Pagar (CxP)</h3>
           <p className="text-3xl font-bold text-red-600 mb-2">
-            ${metrics.accountsPayableBalance.toLocaleString("es-AR", {
+            {currencySymbol}{metrics.accountsPayableBalance.toLocaleString("es-AR", {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
             })}
@@ -107,7 +107,7 @@ export function ContadorDashboard({ data }: { data: DashboardData }) {
             Deudas con proveedores por pagar
           </p>
           <p className="text-sm text-red-600 mt-2">
-            Diferencia: ${(metrics.accountsReceivableBalance - metrics.accountsPayableBalance).toLocaleString("es-AR", {
+            Diferencia: {currencySymbol}{(metrics.accountsReceivableBalance - metrics.accountsPayableBalance).toLocaleString("es-AR", {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
             })}
@@ -150,10 +150,10 @@ export function ContadorDashboard({ data }: { data: DashboardData }) {
       <div className="bg-blue-50 border border-blue-200 p-6 rounded-lg">
         <h3 className="text-lg font-semibold text-blue-900 mb-4">Resumen Financiero</h3>
         <div className="space-y-2 text-sm text-blue-800">
-          <p>✓ Activos corrientes (CxC): ${metrics.accountsReceivableBalance.toLocaleString("es-AR", { maximumFractionDigits: 2 })}</p>
-          <p>✓ Pasivos corrientes (CxP): ${metrics.accountsPayableBalance.toLocaleString("es-AR", { maximumFractionDigits: 2 })}</p>
-          <p>✓ Posición neta: ${(metrics.accountsReceivableBalance - metrics.accountsPayableBalance).toLocaleString("es-AR", { maximumFractionDigits: 2 })}</p>
-          <p>✓ Ticket promedio: ${metrics.averageTicket.toLocaleString("es-AR", { maximumFractionDigits: 2 })}</p>
+          <p>✓ Activos corrientes (CxC): {currencySymbol}{metrics.accountsReceivableBalance.toLocaleString("es-AR", { maximumFractionDigits: 2 })}</p>
+          <p>✓ Pasivos corrientes (CxP): {currencySymbol}{metrics.accountsPayableBalance.toLocaleString("es-AR", { maximumFractionDigits: 2 })}</p>
+          <p>✓ Posición neta: {currencySymbol}{(metrics.accountsReceivableBalance - metrics.accountsPayableBalance).toLocaleString("es-AR", { maximumFractionDigits: 2 })}</p>
+          <p>✓ Ticket promedio: {currencySymbol}{metrics.averageTicket.toLocaleString("es-AR", { maximumFractionDigits: 2 })}</p>
           <p>✓ Volumen de transacciones: {metrics.salesCount}</p>
         </div>
       </div>

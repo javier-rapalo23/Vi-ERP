@@ -17,7 +17,7 @@ const closeShiftSchema = z.object({
 export const openShift = async (req: Request, res: Response) => {
   try {
     const { openingAmount } = openShiftSchema.parse(req.body);
-    const userId = (req as any).user?.id;
+    const userId = req.user?.id;
 
     if (!userId) {
       return res.status(401).json({ error: "Usuario no autenticado" });
@@ -79,7 +79,7 @@ export const closeShift = async (req: Request, res: Response) => {
 
 export const getOpenShift = async (req: Request, res: Response) => {
   try {
-    const userId = (req as any).user?.id;
+    const userId = req.user?.id;
 
     if (!userId) {
       return res.status(401).json({ error: "Usuario no autenticado" });
@@ -135,9 +135,8 @@ export const getShiftDetails = async (req: Request, res: Response) => {
 
 export const getShiftHistory = async (req: Request, res: Response) => {
   try {
-    const authUser = (req as any).user as { id?: number; role?: string } | undefined;
-    const authUserId = authUser?.id;
-    const authUserRole = String(authUser?.role || "").toLowerCase();
+    const authUserId = req.user?.id;
+    const authUserRole = String(req.user?.role ?? "").toLowerCase();
 
     if (!authUserId) {
       return res.status(401).json({ error: "Usuario no autenticado" });

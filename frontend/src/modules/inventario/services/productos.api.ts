@@ -13,6 +13,18 @@ export type Producto = {
   isActive?: boolean;
 };
 
+export const PRODUCTOS_PAGE_LIMIT = 20;
+
+export type ProductosPaginadosResponse = {
+  data: Producto[];
+  pagination: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+};
+
 export function useProductos(includeInactive = false) {
   return useQuery({
     queryKey: ["productos", includeInactive],
@@ -22,6 +34,22 @@ export function useProductos(includeInactive = false) {
       });
       // Filtrar productos válidos
       return (response.data || []).filter((p: any) => p && p.id && p.name) as Producto[];
+    },
+  });
+}
+
+export function useProductosPaginados(params: { page: number; includeInactive?: boolean }) {
+  return useQuery({
+    queryKey: ["productos-paginados", params],
+    queryFn: async () => {
+      const response = await api.get("/productos", {
+        params: {
+          page: params.page,
+          limit: PRODUCTOS_PAGE_LIMIT,
+          ...(params.includeInactive ? { includeInactive: true } : {}),
+        },
+      });
+      return response.data as ProductosPaginadosResponse;
     },
   });
 }

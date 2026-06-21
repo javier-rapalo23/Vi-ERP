@@ -92,7 +92,7 @@ export const login = async (req: Request, res: Response) => {
 
 export const refreshToken = async (req: Request, res: Response) => {
   try {
-    const authUser = (req as any).user;
+    const authUser = req.user;
 
     if (!authUser?.id) {
       return res.status(401).json({ error: "No autorizado" });
@@ -115,7 +115,7 @@ export const refreshToken = async (req: Request, res: Response) => {
 
 export const logout = async (req: Request, res: Response) => {
   try {
-    const authUser = (req as any).user;
+    const authUser = req.user;
     logger.info(`Usuario desconectado: ${authUser?.id}`);
     res.json({ message: "Desconexión exitosa" });
   } catch (error) {
@@ -126,7 +126,7 @@ export const logout = async (req: Request, res: Response) => {
 
 export const checkSession = async (req: Request, res: Response) => {
   try {
-    const authUser = (req as any).user;
+    const authUser = req.user;
 
     if (!authUser?.id) {
       return res.status(401).json({ error: "No autorizado" });

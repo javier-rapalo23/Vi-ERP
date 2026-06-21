@@ -2,7 +2,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsive
 import type { DashboardData } from "../services/dashboard.api";
 import { AlertTriangle, TrendingUp, ShoppingCart } from "lucide-react";
 
-export function CajeroDashboard({ data }: { data: DashboardData }) {
+export function CajeroDashboard({ data, currencySymbol }: { data: DashboardData; currencySymbol: string }) {
   const metrics = data.metrics;
   const todaySales = data.salesLast7Days[data.salesLast7Days.length - 1];
 
@@ -15,7 +15,7 @@ export function CajeroDashboard({ data }: { data: DashboardData }) {
             <div>
               <p className="text-sm text-gray-600">Ventas Hoy</p>
               <p className="text-2xl font-bold text-gray-900">
-                ${todaySales?.sales.toLocaleString("es-AR", {
+                {currencySymbol}{todaySales?.sales.toLocaleString("es-AR", {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
                 }) || "0.00"}
@@ -33,7 +33,7 @@ export function CajeroDashboard({ data }: { data: DashboardData }) {
             <div>
               <p className="text-sm text-gray-600">Ticket Promedio</p>
               <p className="text-2xl font-bold text-gray-900">
-                ${metrics.averageTicket.toLocaleString("es-AR", {
+                {currencySymbol}{metrics.averageTicket.toLocaleString("es-AR", {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
                 })}
@@ -99,7 +99,7 @@ export function CajeroDashboard({ data }: { data: DashboardData }) {
               <div className="text-right">
                 <p className="font-semibold text-gray-900">{product.quantity} unidades</p>
                 <p className="text-sm text-gray-600">
-                  ${product.revenue.toLocaleString("es-AR", {
+                  {currencySymbol}{product.revenue.toLocaleString("es-AR", {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
                   })}

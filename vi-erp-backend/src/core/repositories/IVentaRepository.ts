@@ -7,6 +7,56 @@ export type SalesHistoryFilters = {
   status?: string;
   minAmount?: number;
   maxAmount?: number;
+  page?: number;
+  limit?: number;
+};
+
+export type SaleCustomer = {
+  id: number;
+  name: string;
+  phone: string | null;
+  email: string | null;
+};
+
+export type SaleDetailProduct = {
+  id: number;
+  name: string;
+  code: string | null;
+};
+
+export type SaleDetail = {
+  id: number;
+  productId: number;
+  quantity: number;
+  unitPrice: number;
+  product: SaleDetailProduct | null;
+};
+
+export type SaleResult = {
+  id: number;
+  invoiceNumber: string | null;
+  date: Date;
+  total: number;
+  status: string;
+  paymentMethod: string;
+  invoiceSnapshot: unknown;
+  customer: SaleCustomer | null;
+  details: SaleDetail[];
+};
+
+export type SalesHistoryResult = {
+  data: SaleResult[];
+  summary: {
+    totalSales: number;
+    totalAmount: number;
+    totalItemsSold: number;
+  };
+  pagination: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
 };
 
 export type PeriodTotals = {
@@ -16,8 +66,8 @@ export type PeriodTotals = {
 };
 
 export interface ISaleRepository {
-  create(sale: Sale): Promise<any>;
-  findAll(filters?: SalesHistoryFilters): Promise<any[]>;
-  findById(id: number): Promise<any | null>;
+  create(sale: Sale): Promise<SaleResult>;
+  findAll(filters?: SalesHistoryFilters): Promise<SalesHistoryResult>;
+  findById(id: number): Promise<SaleResult | null>;
   getTotalsByPeriod(): Promise<PeriodTotals>;
 }

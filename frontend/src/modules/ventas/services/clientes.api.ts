@@ -26,6 +26,18 @@ export type UpdateClienteData = {
   isActive?: boolean;
 };
 
+export const CLIENTES_PAGE_LIMIT = 20;
+
+export type ClientesPaginadosResponse = {
+  data: Cliente[];
+  pagination: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+};
+
 export function useClientes(includeInactive = false) {
   return useQuery({
     queryKey: ["clientes", includeInactive],
@@ -34,6 +46,22 @@ export function useClientes(includeInactive = false) {
         params: includeInactive ? { includeInactive: true } : {},
       });
       return response.data as Cliente[];
+    },
+  });
+}
+
+export function useClientesPaginados(params: { page: number; includeInactive?: boolean }) {
+  return useQuery({
+    queryKey: ["clientes-paginados", params],
+    queryFn: async () => {
+      const response = await api.get("/customers", {
+        params: {
+          page: params.page,
+          limit: CLIENTES_PAGE_LIMIT,
+          ...(params.includeInactive ? { includeInactive: true } : {}),
+        },
+      });
+      return response.data as ClientesPaginadosResponse;
     },
   });
 }

@@ -138,16 +138,16 @@ export default function UserForm() {
   return (
     <div className="max-w-2xl mx-auto">
       <BackButton to="/mantenimientos/usuarios" />
-      <div className="space-y-3 rounded border border-beige-arena dark:border-neutral-700 bg-white dark:bg-neutral-800 p-6 shadow-sm">
+      <div className="space-y-3 rounded border border-slate-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 p-6 shadow-sm">
         <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-bold text-gris-piedra dark:text-neutral-100">
+          <h2 className="text-2xl font-bold text-slate-700 dark:text-neutral-100">
             {isEditing ? "Editar Usuario" : "Nuevo Usuario"}
           </h2>
           {isEditing && (
             <button
               type="button"
               onClick={() => setShowResetPassword(true)}
-              className="rounded border border-beige-arena dark:border-neutral-600 px-3 py-1.5 text-sm text-gris-piedra dark:text-neutral-300 hover:bg-beige-arena dark:hover:bg-neutral-700 flex items-center gap-2"
+              className="rounded border border-slate-200 dark:border-neutral-600 px-3 py-1.5 text-sm text-slate-700 dark:text-neutral-300 hover:bg-slate-100 dark:hover:bg-neutral-700 flex items-center gap-2"
             >
               <KeyRound className="w-4 h-4" />
               Resetear contraseña
@@ -158,47 +158,47 @@ export default function UserForm() {
         <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4 mt-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <label className="grid gap-1">
-              <span className="text-sm font-medium text-gris-piedra dark:text-neutral-300">Nombre</span>
+              <span className="text-sm font-medium text-slate-700 dark:text-neutral-300">Nombre</span>
               <input
-                className="rounded border border-beige-arena dark:border-neutral-600 bg-white dark:bg-neutral-700 text-gris-piedra dark:text-neutral-100 p-2 focus:outline-none focus:ring-2 focus:ring-oliva"
+                className="rounded border border-slate-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-slate-700 dark:text-neutral-100 p-2 focus:outline-none focus:ring-2 focus:ring-vixo-500"
                 {...register("name")}
                 placeholder="Juan Pérez"
               />
-              {errors.name && <small className="text-terracota">{String(errors.name.message)}</small>}
+              {errors.name && <small className="text-red-600 dark:text-red-400">{String(errors.name.message)}</small>}
             </label>
 
             <label className="grid gap-1">
-              <span className="text-sm font-medium text-gris-piedra dark:text-neutral-300">Email</span>
+              <span className="text-sm font-medium text-slate-700 dark:text-neutral-300">Email</span>
               <input
                 type="email"
-                className="rounded border border-beige-arena dark:border-neutral-600 bg-white dark:bg-neutral-700 text-gris-piedra dark:text-neutral-100 p-2 focus:outline-none focus:ring-2 focus:ring-oliva"
+                className="rounded border border-slate-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-slate-700 dark:text-neutral-100 p-2 focus:outline-none focus:ring-2 focus:ring-vixo-500"
                 {...register("email")}
                 placeholder="juan@example.com"
               />
-              {errors.email && <small className="text-terracota">{String(errors.email.message)}</small>}
+              {errors.email && <small className="text-red-600 dark:text-red-400">{String(errors.email.message)}</small>}
             </label>
           </div>
 
           {!isEditing && (
             <label className="grid gap-1">
-              <span className="text-sm font-medium text-gris-piedra dark:text-neutral-300">
+              <span className="text-sm font-medium text-slate-700 dark:text-neutral-300">
                 Contraseña
               </span>
               <input
                 type="password"
-                className="rounded border border-beige-arena dark:border-neutral-600 bg-white dark:bg-neutral-700 text-gris-piedra dark:text-neutral-100 p-2 focus:outline-none focus:ring-2 focus:ring-oliva"
+                className="rounded border border-slate-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-slate-700 dark:text-neutral-100 p-2 focus:outline-none focus:ring-2 focus:ring-vixo-500"
                 {...register("password")}
                 placeholder="••••••"
               />
-              {errors.password && <small className="text-terracota">{String(errors.password.message)}</small>}
+              {errors.password && <small className="text-red-600 dark:text-red-400">{String(errors.password.message)}</small>}
             </label>
           )}
 
           <div className="space-y-2">
-            <span className="text-sm font-medium text-gris-piedra dark:text-neutral-300">Roles</span>
+            <span className="text-sm font-medium text-slate-700 dark:text-neutral-300">Roles</span>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
               {roles.map((role) => (
-                <label key={role.id} className="flex items-center gap-2 p-2 rounded border border-beige-arena dark:border-neutral-600 cursor-pointer hover:bg-beige-arena dark:hover:bg-neutral-700">
+                <label key={role.id} className="flex items-center gap-2 p-2 rounded border border-slate-200 dark:border-neutral-600 cursor-pointer hover:bg-slate-100 dark:hover:bg-neutral-700">
                   <input
                     type="checkbox"
                     checked={selectedRoles.includes(role.id)}
@@ -206,9 +206,9 @@ export default function UserForm() {
                     className="h-4 w-4"
                   />
                   <div>
-                    <div className="text-sm font-medium text-gris-piedra dark:text-neutral-100">{role.name}</div>
+                    <div className="text-sm font-medium text-slate-700 dark:text-neutral-100">{role.name}</div>
                     {role.description && (
-                      <div className="text-xs text-gris-piedra dark:text-neutral-400 opacity-75">
+                      <div className="text-xs text-slate-700 dark:text-neutral-400 opacity-75">
                         {role.description}
                       </div>
                     )}
@@ -221,7 +221,7 @@ export default function UserForm() {
           {isEditing && (
             <label className="flex items-center gap-2">
               <input type="checkbox" {...register("isActive")} className="h-4 w-4" />
-              <span className="text-sm font-medium text-gris-piedra dark:text-neutral-300">Usuario activo</span>
+              <span className="text-sm font-medium text-slate-700 dark:text-neutral-300">Usuario activo</span>
             </label>
           )}
 
@@ -229,7 +229,7 @@ export default function UserForm() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="rounded bg-oliva px-4 py-2 text-marfil hover:opacity-95 disabled:opacity-50 flex items-center gap-2"
+              className="rounded bg-vixo-500 hover:bg-vixo-600 px-4 py-2 text-white transition-colors disabled:opacity-50 flex items-center gap-2"
             >
               <Save className="w-4 h-4" />
               {isSubmitting ? "Guardando..." : "Guardar"}
@@ -238,7 +238,7 @@ export default function UserForm() {
             <button
               type="button"
               onClick={() => navigate("/mantenimientos/usuarios")}
-              className="rounded border border-beige-arena dark:border-neutral-600 px-4 py-2 text-gris-piedra dark:text-neutral-300 hover:bg-beige-arena dark:hover:bg-neutral-700 flex items-center gap-2"
+              className="rounded border border-slate-200 dark:border-neutral-600 px-4 py-2 text-slate-700 dark:text-neutral-300 hover:bg-slate-100 dark:hover:bg-neutral-700 flex items-center gap-2"
             >
               <X className="w-4 h-4" />
               Cancelar
@@ -258,36 +258,36 @@ export default function UserForm() {
           }}
         >
           <div 
-            className="bg-white dark:bg-neutral-800 border border-beige-arena dark:border-neutral-700 rounded-xl p-6 shadow-lg max-w-md w-full mx-4"
+            className="bg-white dark:bg-neutral-800 border border-slate-200 dark:border-neutral-700 rounded-xl p-6 shadow-lg max-w-md w-full mx-4"
             onClick={(e) => e.stopPropagation()}
           >
-            <h3 className="text-xl font-bold text-gris-piedra dark:text-neutral-100 mb-4">
+            <h3 className="text-xl font-bold text-slate-700 dark:text-neutral-100 mb-4">
               Resetear contraseña
             </h3>
 
             <div className="space-y-4">
               <label className="grid gap-1">
-                <span className="text-sm font-medium text-gris-piedra dark:text-neutral-300">
+                <span className="text-sm font-medium text-slate-700 dark:text-neutral-300">
                   Nueva contraseña
                 </span>
                 <input
                   type="password"
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
-                  className="rounded border border-beige-arena dark:border-neutral-600 bg-white dark:bg-neutral-700 text-gris-piedra dark:text-neutral-100 p-2 focus:outline-none focus:ring-2 focus:ring-oliva"
+                  className="rounded border border-slate-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-slate-700 dark:text-neutral-100 p-2 focus:outline-none focus:ring-2 focus:ring-vixo-500"
                   placeholder="••••••"
                 />
               </label>
 
               <label className="grid gap-1">
-                <span className="text-sm font-medium text-gris-piedra dark:text-neutral-300">
+                <span className="text-sm font-medium text-slate-700 dark:text-neutral-300">
                   Confirmar contraseña
                 </span>
                 <input
                   type="password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="rounded border border-beige-arena dark:border-neutral-600 bg-white dark:bg-neutral-700 text-gris-piedra dark:text-neutral-100 p-2 focus:outline-none focus:ring-2 focus:ring-oliva"
+                  className="rounded border border-slate-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-slate-700 dark:text-neutral-100 p-2 focus:outline-none focus:ring-2 focus:ring-vixo-500"
                   placeholder="••••••"
                 />
               </label>
@@ -296,7 +296,7 @@ export default function UserForm() {
                 <button
                   onClick={handleResetPassword}
                   disabled={updateMutation.isPending}
-                  className="flex-1 rounded bg-oliva px-4 py-2 text-marfil hover:opacity-95 disabled:opacity-50 flex items-center justify-center gap-2"
+                  className="flex-1 rounded bg-vixo-500 hover:bg-vixo-600 px-4 py-2 text-white transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
                 >
                   <Save className="w-4 h-4" />
                   {updateMutation.isPending ? "Guardando..." : "Actualizar"}
@@ -307,7 +307,7 @@ export default function UserForm() {
                     setNewPassword("");
                     setConfirmPassword("");
                   }}
-                  className="rounded border border-beige-arena dark:border-neutral-600 px-4 py-2 text-gris-piedra dark:text-neutral-300 hover:bg-beige-arena dark:hover:bg-neutral-700 flex items-center gap-2"
+                  className="rounded border border-slate-200 dark:border-neutral-600 px-4 py-2 text-slate-700 dark:text-neutral-300 hover:bg-slate-100 dark:hover:bg-neutral-700 flex items-center gap-2"
                 >
                   <X className="w-4 h-4" />
                   Cancelar

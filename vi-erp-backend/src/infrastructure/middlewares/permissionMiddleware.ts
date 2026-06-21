@@ -1,11 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { prisma } from "../database/client";
 
-type UserPayload = {
-  id?: number;
-  role?: string;
-};
-
 const roleFallbackPermissions: Record<string, string[]> = {
   admin: ["*"],
   cajero: [
@@ -49,7 +44,7 @@ function hasPermission(permissionNames: Set<string>, moduleKey: string, actionKe
 export function requirePermission(moduleKey: string, actionKey: "ver" | "crear" | "editar" | "anular") {
   return async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const authUser = (req as any).user as UserPayload | undefined;
+      const authUser = req.user;
 
       if (!authUser?.id) {
         return res.status(401).json({ error: "No autorizado" });

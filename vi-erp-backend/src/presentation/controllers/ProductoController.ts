@@ -11,11 +11,27 @@ const prisma = new PrismaClient();
 export const getProducts = async (req: Request, res: Response) => {
   try {
     const includeInactive = req.query.includeInactive === "true";
-    const products = await prisma.product.findMany({
-      where: includeInactive ? undefined : { isActive: true },
-      orderBy: { name: "asc" },
-    });
+    const where = includeInactive ? undefined : { isActive: true };
 
+    const pageStr = req.query.page as string | undefined;
+    const limitStr = req.query.limit as string | undefined;
+
+    if (pageStr !== undefined || limitStr !== undefined) {
+      const page = Math.max(1, parseInt(pageStr ?? "1") || 1);
+      const limit = Math.min(100, Math.max(1, parseInt(limitStr ?? "20") || 20));
+
+      const [total, products] = await Promise.all([
+        prisma.product.count({ where }),
+        prisma.product.findMany({ where, orderBy: { name: "asc" }, skip: (page - 1) * limit, take: limit }),
+      ]);
+
+      return res.json({
+        data: products,
+        pagination: { total, page, limit, totalPages: Math.ceil(total / limit) },
+      });
+    }
+
+    const products = await prisma.product.findMany({ where, orderBy: { name: "asc" } });
     res.json(products);
   } catch (error) {
     logger.error("Error fetching products:", error);

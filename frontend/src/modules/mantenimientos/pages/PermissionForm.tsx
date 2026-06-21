@@ -63,38 +63,38 @@ export default function PermissionForm() {
   return (
     <div className="max-w-2xl mx-auto">
       <BackButton to="/mantenimientos/permisos" />
-      <div className="space-y-3 rounded border border-beige-arena dark:border-neutral-700 bg-white dark:bg-neutral-800 p-6 shadow-sm">
-        <h2 className="text-2xl font-bold text-gris-piedra dark:text-neutral-100">
+      <div className="space-y-3 rounded border border-slate-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 p-6 shadow-sm">
+        <h2 className="text-2xl font-bold text-slate-700 dark:text-neutral-100">
           {isEditing ? "Editar Permiso" : "Nuevo Permiso"}
         </h2>
 
         <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4 mt-4">
           <label className="grid gap-1">
-            <span className="text-sm font-medium text-gris-piedra dark:text-neutral-300">Nombre</span>
+            <span className="text-sm font-medium text-slate-700 dark:text-neutral-300">Nombre</span>
             <input
-              className="rounded border border-beige-arena dark:border-neutral-600 bg-white dark:bg-neutral-700 text-gris-piedra dark:text-neutral-100 p-2 focus:outline-none focus:ring-2 focus:ring-oliva"
+              className="rounded border border-slate-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-slate-700 dark:text-neutral-100 p-2 focus:outline-none focus:ring-2 focus:ring-vixo-500"
               {...register("name")}
               placeholder="crear_producto"
             />
-            {errors.name && <small className="text-terracota">{errors.name.message}</small>}
+            {errors.name && <small className="text-red-600 dark:text-red-400">{errors.name.message}</small>}
           </label>
 
           <label className="grid gap-1">
-            <span className="text-sm font-medium text-gris-piedra dark:text-neutral-300">Descripción</span>
+            <span className="text-sm font-medium text-slate-700 dark:text-neutral-300">Descripción</span>
             <textarea
-              className="rounded border border-beige-arena dark:border-neutral-600 bg-white dark:bg-neutral-700 text-gris-piedra dark:text-neutral-100 p-2 focus:outline-none focus:ring-2 focus:ring-oliva"
+              className="rounded border border-slate-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-slate-700 dark:text-neutral-100 p-2 focus:outline-none focus:ring-2 focus:ring-vixo-500"
               {...register("description")}
               placeholder="Permite crear nuevos productos en el inventario"
               rows={3}
             />
-            {errors.description && <small className="text-terracota">{errors.description.message}</small>}
+            {errors.description && <small className="text-red-600 dark:text-red-400">{errors.description.message}</small>}
           </label>
 
           <div className="flex gap-2 mt-2">
             <button
               type="submit"
               disabled={isSubmitting}
-              className="rounded bg-oliva px-4 py-2 text-marfil hover:opacity-95 disabled:opacity-50 flex items-center gap-2"
+              className="rounded bg-vixo-500 px-4 py-2 text-white hover:bg-vixo-600 disabled:opacity-50 flex items-center gap-2 transition-colors"
             >
               <Save className="w-4 h-4" />
               {isSubmitting ? "Guardando..." : "Guardar"}
@@ -103,7 +103,7 @@ export default function PermissionForm() {
             <button
               type="button"
               onClick={() => navigate("/mantenimientos/permisos")}
-              className="rounded border border-beige-arena dark:border-neutral-600 px-4 py-2 text-gris-piedra dark:text-neutral-300 hover:bg-beige-arena dark:hover:bg-neutral-700 flex items-center gap-2"
+              className="rounded border border-slate-200 dark:border-neutral-600 px-4 py-2 text-slate-700 dark:text-neutral-300 hover:bg-slate-100 dark:hover:bg-neutral-700 flex items-center gap-2 transition-colors"
             >
               <X className="w-4 h-4" />
               Cancelar

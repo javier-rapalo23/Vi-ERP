@@ -8,6 +8,7 @@ export type VentasHistoryFilters = {
   status?: string;
   minAmount?: string;
   maxAmount?: string;
+  page?: number;
 };
 
 export type VentaHistorial = {
@@ -43,6 +44,12 @@ export type VentasHistoryResponse = {
     totalSales: number;
     totalAmount: number;
     totalItemsSold: number;
+  };
+  pagination: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
   };
 };
 
@@ -102,6 +109,8 @@ export type PeriodTotals = {
   thisMonth: { count: number; total: number };
 };
 
+export const VENTAS_PAGE_LIMIT = 20;
+
 export function useVentasHistorial(filters: VentasHistoryFilters) {
   return useQuery({
     queryKey: ["ventas-historial", filters],
@@ -114,6 +123,8 @@ export function useVentasHistorial(filters: VentasHistoryFilters) {
           status: filters.status || undefined,
           minAmount: filters.minAmount || undefined,
           maxAmount: filters.maxAmount || undefined,
+          page: filters.page ?? 1,
+          limit: VENTAS_PAGE_LIMIT,
         },
       });
       return response.data as VentasHistoryResponse;

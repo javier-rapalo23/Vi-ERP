@@ -2,7 +2,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsive
 import type { DashboardData } from "../services/dashboard.api";
 import { Package, TrendingUp } from "lucide-react";
 
-export function UserDashboard({ data }: { data: DashboardData }) {
+export function UserDashboard({ data, currencySymbol }: { data: DashboardData; currencySymbol: string }) {
   const metrics = data.metrics;
 
   return (
@@ -65,7 +65,7 @@ export function UserDashboard({ data }: { data: DashboardData }) {
           <div className="p-3 bg-white rounded border border-gray-200">
             <p className="text-sm text-gray-600">Ticket Promedio</p>
             <p className="text-xl font-bold text-gray-900">
-              ${metrics.averageTicket.toLocaleString("es-AR", {
+              {currencySymbol}{metrics.averageTicket.toLocaleString("es-AR", {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
               })}
@@ -74,7 +74,7 @@ export function UserDashboard({ data }: { data: DashboardData }) {
           <div className="p-3 bg-white rounded border border-gray-200">
             <p className="text-sm text-gray-600">Total de Ventas</p>
             <p className="text-xl font-bold text-gray-900">
-              ${metrics.salesTotal.toLocaleString("es-AR", {
+              {currencySymbol}{metrics.salesTotal.toLocaleString("es-AR", {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
               })}
