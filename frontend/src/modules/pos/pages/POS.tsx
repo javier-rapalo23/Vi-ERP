@@ -632,38 +632,7 @@ export default function POS() {
           currencySymbol={currencySymbol}
         />
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-        <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 p-4 shadow-sm">
 
-          <p className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-3">Ingresar producto</p>
-          <div className="mt-3 flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-            <input
-              ref={barcodeInputRef}
-              autoFocus
-              value={barcodeQuery}
-              onChange={(e) => setBarcodeQuery(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  e.preventDefault();
-                  addByBarcode();
-                }
-              }}
-              placeholder="Escanear o ingresar código de barras"
-              autoComplete="off"
-              autoCapitalize="none"
-              autoCorrect="off"
-              spellCheck={false}
-              className="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-50 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-vixo-500 focus:border-vixo-500 transition-colors"
-              aria-label="Código de barras"
-            />
-            <button
-              type="button"
-              onClick={() => addByBarcode()}
-              className="rounded-lg bg-vixo-500 hover:bg-vixo-600 px-3 py-2 text-white font-medium transition-colors"
-            >
-              Agregar
-            </button>
-          </div>
-        </div>
 
         <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 p-4 shadow-sm">
           <div className="flex items-center gap-2 text-slate-900 dark:text-slate-50 mb-3">
@@ -757,6 +726,38 @@ export default function POS() {
                 </ul>
               </div>
             )}
+          </div>
+        </div>
+                <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 p-4 shadow-sm">
+
+          <p className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-3">Ingresar producto</p>
+          <div className="mt-3 flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+            <input
+              ref={barcodeInputRef}
+              autoFocus
+              value={barcodeQuery}
+              onChange={(e) => setBarcodeQuery(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  addByBarcode();
+                }
+              }}
+              placeholder="Escanear o ingresar código de barras"
+              autoComplete="off"
+              autoCapitalize="none"
+              autoCorrect="off"
+              spellCheck={false}
+              className="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-50 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-vixo-500 focus:border-vixo-500 transition-colors"
+              aria-label="Código de barras"
+            />
+            <button
+              type="button"
+              onClick={() => addByBarcode()}
+              className="rounded-lg bg-vixo-500 hover:bg-vixo-600 px-3 py-2 text-white font-medium transition-colors"
+            >
+              Agregar
+            </button>
           </div>
         </div>
       </div>

@@ -105,94 +105,94 @@ export default function ProductoForm() {
   return (
     <div className="max-w-2xl mx-auto">
       <BackButton to="/inventario" />
-      <div className="space-y-3 rounded border border-beige-arena dark:border-neutral-700 bg-white dark:bg-neutral-800 p-6 shadow-sm">
-        <h2 className="text-2xl font-bold text-gris-piedra dark:text-neutral-100">
+      <div className="space-y-3 rounded border border-slate-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 p-6 shadow-sm">
+        <h2 className="text-2xl font-bold text-slate-700 dark:text-neutral-100">
           {isEditing ? "Editar Producto" : "Nuevo Producto"}
         </h2>
 
         <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4 mt-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <label className="grid gap-1">
-              <span className="text-sm font-medium text-gris-piedra dark:text-neutral-300">Código de producto</span>
+              <span className="text-sm font-medium text-slate-700 dark:text-neutral-300">Código de producto</span>
               <input
-                className="rounded border border-beige-arena dark:border-neutral-600 bg-white dark:bg-neutral-700 text-gris-piedra dark:text-neutral-100 p-2 focus:outline-none focus:ring-2 focus:ring-oliva"
+                className="rounded border border-slate-300 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-slate-700 dark:text-neutral-100 p-2 focus:outline-none focus:ring-2 focus:ring-vixo-500"
                 {...register("code")}
                 placeholder="PRD-001"
               />
               <small className="text-xs text-slate-500 dark:text-slate-400">Único. 3-30 caracteres: letras, números, - o _.</small>
-              {errors.code && <small className="text-terracota">{errors.code.message}</small>}
+              {errors.code && <small className="text-red-500">{errors.code.message}</small>}
             </label>
 
             <label className="grid gap-1">
-              <span className="text-sm font-medium text-gris-piedra dark:text-neutral-300">Código de barras (opcional)</span>
+              <span className="text-sm font-medium text-slate-700 dark:text-neutral-300">Código de barras (opcional)</span>
               <input
-                className="rounded border border-beige-arena dark:border-neutral-600 bg-white dark:bg-neutral-700 text-gris-piedra dark:text-neutral-100 p-2 focus:outline-none focus:ring-2 focus:ring-oliva"
+                className="rounded border border-slate-300 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-slate-700 dark:text-neutral-100 p-2 focus:outline-none focus:ring-2 focus:ring-vixo-500"
                 {...register("barcode")}
                 placeholder="7501031311309"
               />
               <small className="text-xs text-slate-500 dark:text-slate-400">Único. Solo dígitos de 8 a 14.</small>
-              {errors.barcode && <small className="text-terracota">{errors.barcode.message}</small>}
+              {errors.barcode && <small className="text-red-500">{errors.barcode.message}</small>}
             </label>
 
             <label className="grid gap-1 md:col-span-2">
-              <span className="text-sm font-medium text-gris-piedra dark:text-neutral-300">Nombre</span>
+              <span className="text-sm font-medium text-slate-700 dark:text-neutral-300">Nombre</span>
               <input
-                className="rounded border border-beige-arena dark:border-neutral-600 bg-white dark:bg-neutral-700 text-gris-piedra dark:text-neutral-100 p-2 focus:outline-none focus:ring-2 focus:ring-oliva"
+                className="rounded border border-slate-300 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-slate-700 dark:text-neutral-100 p-2 focus:outline-none focus:ring-2 focus:ring-vixo-500"
                 {...register("name")}
                 placeholder="Producto de ejemplo"
               />
-              {errors.name && <small className="text-terracota">{errors.name.message}</small>}
+              {errors.name && <small className="text-red-500">{errors.name.message}</small>}
             </label>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <label className="grid gap-1">
-              <span className="text-sm font-medium text-gris-piedra dark:text-neutral-300">Precio</span>
+              <span className="text-sm font-medium text-slate-700 dark:text-neutral-300">Precio</span>
               <input
                 type="number"
                 step="0.01"
-                className="rounded border border-beige-arena dark:border-neutral-600 bg-white dark:bg-neutral-700 text-gris-piedra dark:text-neutral-100 p-2 focus:outline-none focus:ring-2 focus:ring-oliva"
+                className="rounded border border-slate-300 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-slate-700 dark:text-neutral-100 p-2 focus:outline-none focus:ring-2 focus:ring-vixo-500"
                 {...register("price", { valueAsNumber: true })}
                 placeholder="0.00"
               />
-              {errors.price && <small className="text-terracota">{errors.price.message}</small>}
+              {errors.price && <small className="text-red-500">{errors.price.message}</small>}
             </label>
 
             <label className="grid gap-1">
-              <span className="text-sm font-medium text-gris-piedra dark:text-neutral-300">Costo</span>
+              <span className="text-sm font-medium text-slate-700 dark:text-neutral-300">Costo</span>
               <input
                 type="number"
                 step="0.01"
-                className="rounded border border-beige-arena dark:border-neutral-600 bg-white dark:bg-neutral-700 text-gris-piedra dark:text-neutral-100 p-2 focus:outline-none focus:ring-2 focus:ring-oliva"
+                className="rounded border border-slate-300 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-slate-700 dark:text-neutral-100 p-2 focus:outline-none focus:ring-2 focus:ring-vixo-500"
                 {...register("cost", { valueAsNumber: true })}
                 placeholder="0.00"
               />
-              {errors.cost && <small className="text-terracota">{errors.cost.message}</small>}
+              {errors.cost && <small className="text-red-500">{errors.cost.message}</small>}
             </label>
 
             <label className="grid gap-1">
-              <span className="text-sm font-medium text-gris-piedra dark:text-neutral-300">Stock (opcional)</span>
+              <span className="text-sm font-medium text-slate-700 dark:text-neutral-300">Stock (opcional)</span>
               <input
                 type="number"
-                className="rounded border border-beige-arena dark:border-neutral-600 bg-white dark:bg-neutral-700 text-gris-piedra dark:text-neutral-100 p-2 focus:outline-none focus:ring-2 focus:ring-oliva"
+                className="rounded border border-slate-300 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-slate-700 dark:text-neutral-100 p-2 focus:outline-none focus:ring-2 focus:ring-vixo-500"
                 {...register("stock", { valueAsNumber: true })}
                 placeholder="0"
               />
-              {errors.stock && <small className="text-terracota">{errors.stock.message}</small>}
+              {errors.stock && <small className="text-red-500">{errors.stock.message}</small>}
             </label>
           </div>
 
           <div className="grid grid-cols-1 gap-4">
             <label className="grid gap-1">
-              <span className="text-sm font-medium text-gris-piedra dark:text-neutral-300">Stock Mínimo (opcional)</span>
+              <span className="text-sm font-medium text-slate-700 dark:text-neutral-300">Stock Mínimo (opcional)</span>
               <input
                 type="number"
-                className="rounded border border-beige-arena dark:border-neutral-600 bg-white dark:bg-neutral-700 text-gris-piedra dark:text-neutral-100 p-2 focus:outline-none focus:ring-2 focus:ring-oliva"
+                className="rounded border border-slate-300 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-slate-700 dark:text-neutral-100 p-2 focus:outline-none focus:ring-2 focus:ring-vixo-500"
                 {...register("minStock", { valueAsNumber: true })}
                 placeholder="0"
               />
               <small className="text-xs text-slate-500 dark:text-slate-400">Unidades que activan alerta de stock bajo. Defecto: 0</small>
-              {errors.minStock && <small className="text-terracota">{errors.minStock.message}</small>}
+              {errors.minStock && <small className="text-red-500">{errors.minStock.message}</small>}
             </label>
           </div>
 
@@ -200,7 +200,7 @@ export default function ProductoForm() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="rounded bg-oliva px-4 py-2 text-marfil hover:opacity-95 disabled:opacity-50 flex items-center gap-2"
+              className="rounded bg-vixo-500 hover:bg-vixo-600 active:bg-vixo-700 px-4 py-2 text-white font-medium disabled:opacity-50 flex items-center gap-2 transition-colors"
             >
               <Save className="w-4 h-4" />
               {isSubmitting ? "Guardando..." : "Guardar"}
@@ -209,7 +209,7 @@ export default function ProductoForm() {
             <button
               type="button"
               onClick={() => navigate("/inventario")}
-              className="rounded border border-beige-arena dark:border-neutral-600 px-4 py-2 text-gris-piedra dark:text-neutral-300 hover:bg-beige-arena dark:hover:bg-neutral-700 flex items-center gap-2"
+              className="rounded border border-slate-300 dark:border-neutral-600 px-4 py-2 text-slate-700 dark:text-neutral-300 hover:bg-slate-100 dark:hover:bg-neutral-700 flex items-center gap-2"
             >
               <X className="w-4 h-4" />
               Cancelar

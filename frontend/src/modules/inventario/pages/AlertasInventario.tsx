@@ -78,7 +78,7 @@ export default function AlertasInventario() {
       <div className="space-y-4">
         {/* Header */}
         <div className="space-y-2">
-          <h1 className="text-3xl font-bold text-gris-piedra dark:text-neutral-100">
+          <h1 className="text-3xl font-bold text-slate-700 dark:text-neutral-100">
             Alertas de Inventario
           </h1>
           <p className="text-sm text-slate-600 dark:text-slate-400">
@@ -87,13 +87,13 @@ export default function AlertasInventario() {
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-2 border-b border-beige-arena dark:border-neutral-700">
+        <div className="flex gap-2 border-b border-slate-300 dark:border-neutral-700">
           <button
             onClick={() => setActiveTab("stock")}
             className={`px-4 py-2 border-b-2 font-medium transition ${
               activeTab === "stock"
-                ? "border-oliva text-oliva"
-                : "border-transparent text-slate-600 dark:text-slate-400 hover:text-gris-piedra dark:hover:text-neutral-300"
+                ? "border-vixo-500 text-vixo-600"
+                : "border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-700 dark:hover:text-neutral-300"
             }`}
           >
             <div className="flex items-center gap-2">
@@ -106,8 +106,8 @@ export default function AlertasInventario() {
             onClick={() => setActiveTab("rotation")}
             className={`px-4 py-2 border-b-2 font-medium transition ${
               activeTab === "rotation"
-                ? "border-oliva text-oliva"
-                : "border-transparent text-slate-600 dark:text-slate-400 hover:text-gris-piedra dark:hover:text-neutral-300"
+                ? "border-vixo-500 text-vixo-600"
+                : "border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-700 dark:hover:text-neutral-300"
             }`}
           >
             <div className="flex items-center gap-2">
@@ -137,7 +137,7 @@ export default function AlertasInventario() {
                       }`} />
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="font-bold text-gris-piedra dark:text-neutral-100">
+                          <span className="font-bold text-slate-700 dark:text-neutral-100">
                             {alert.code}
                           </span>
                           <span className={`text-xs font-semibold px-2 py-1 rounded ${getSeverityBadgeColor(
@@ -155,7 +155,7 @@ export default function AlertasInventario() {
                         </p>
                       </div>
                     </div>
-                    <button className="text-oliva hover:opacity-80 font-medium text-sm">
+                    <button className="text-vixo-600 hover:opacity-80 font-medium text-sm">
                       Reordenar
                     </button>
                   </div>
@@ -185,7 +185,7 @@ export default function AlertasInventario() {
                       }`} />
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="font-bold text-gris-piedra dark:text-neutral-100">
+                          <span className="font-bold text-slate-700 dark:text-neutral-100">
                             {alert.code}
                           </span>
                           <span className={`text-xs font-semibold px-2 py-1 rounded ${getSeverityBadgeColor(
@@ -215,7 +215,7 @@ export default function AlertasInventario() {
                         </p>
                       </div>
                     </div>
-                    <button className="text-oliva hover:opacity-80 font-medium text-sm">
+                    <button className="text-vixo-600 hover:opacity-80 font-medium text-sm">
                       Revisar
                     </button>
                   </div>
