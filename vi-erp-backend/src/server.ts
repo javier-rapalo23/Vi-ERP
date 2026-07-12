@@ -33,7 +33,8 @@ const corsOptions = {
       "http://localhost:5173", // Desarrollo local
       "http://localhost:3000",
       "http://localhost:4173", // Preview de Vite
-      "https://vixo-cloud.vercel.app", // Frontend en Vercel
+      "https://vixo-cloud.vercel.app", 
+      "https://vixo.javierorellana.dev/,"// Frontend en Vercel
     ];
     
     if (allowedOrigins.includes(origin) || config.nodeEnv === "development") {
